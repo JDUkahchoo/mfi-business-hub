@@ -21,6 +21,13 @@ This directory contains the durable source-of-truth documents for the MFI Busine
 - `decisions/` — durable architecture decision records when implementation choices are made.
 - `superpowers/specs/` and `superpowers/plans/` — approved designs and implementation plans supporting repository work.
 
+## Operations
+
+- [AI Development Roles](operations/AI_DEVELOPMENT_ROLES.md) — responsibilities, model-routing defaults, review independence, and evaluation rules.
+- [Branch and Worktree Workflow](operations/BRANCH_WORKFLOW.md) — issue ownership, isolated writing, verification, review, merge, and handoff procedure.
+- [Current Handoff](../HANDOFF.md) — active branch, owner, verification, constraints, and next action.
+- [ADR 0001](decisions/0001-multi-model-development-operating-model.md) — accepted multi-model development operating model.
+
 ## Source-of-truth order
 
 When documents overlap, use the most specific governing document: authority questions go to the Authority Matrix; agent identity goes to the Agent Registry; agent construction goes to the Agent Standard; system boundaries go to the architecture set. If two authoritative documents genuinely conflict, stop implementation and reconcile both in the same change.

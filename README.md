@@ -56,6 +56,12 @@ worker/     Planned local Compute Plane runtime boundary
 
 Shared coding-assistant rules are in [AGENTS.md](AGENTS.md).
 
+## Development collaboration
+
+Codex is the primary engineering lead, Claude is the architecture and independent review lead, and OpenCode supplies bounded local analyst and execution-worker roles. Gemma 4 and Nemotron 3.5 Lightning are preferred initial local routing assignments, not permanent agent identities.
+
+Read the current [handoff](HANDOFF.md), [AI development roles](docs/operations/AI_DEVELOPMENT_ROLES.md), and [branch/worktree workflow](docs/operations/BRANCH_WORKFLOW.md) before starting repository work.
+
 ## Development setup
 
 ```powershell

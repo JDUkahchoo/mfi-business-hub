@@ -10,7 +10,10 @@ Read these files before making architectural, governance, agent, or authority ch
 2. `docs/README.md`
 3. `docs/architecture/ARCHITECTURE.md`
 4. the relevant document under `docs/governance/`
-5. `docs/ROADMAP.md`
+5. `docs/operations/AI_DEVELOPMENT_ROLES.md`
+6. `docs/operations/BRANCH_WORKFLOW.md`
+7. `HANDOFF.md`
+8. `docs/ROADMAP.md`
 
 More specific instructions in a future subdirectory-level `AGENTS.md` take precedence only within that directory.
 
@@ -27,10 +30,13 @@ More specific instructions in a future subdirectory-level `AGENTS.md` take prece
 - Preserve user and other-agent work. Inspect the current file and repository status immediately before editing.
 - Make narrow changes tied to the current task; do not reorganize unrelated files opportunistically.
 - Avoid simultaneous edits to the same file. When multiple assistants are active, assign file or directory ownership first.
+- Use one issue, one branch/worktree, and one named writer. Reviewers remain read-only on the writer's branch.
 - Do not overwrite a file whose contents changed unexpectedly during your task. Stop, compare, and reconcile.
 - Keep links relative and update all references when moving documents.
 - Add or update tests for executable behavior and structural contracts; run the relevant suite before reporting completion.
 - Record durable architectural choices under `docs/decisions/` when implementation begins to depend on them.
+- Update `HANDOFF.md` before transferring ownership and after every material commit or milestone change.
+- Treat provider/model assignments as routing policy; do not encode providers into canonical MFI agent identities.
 
 ## Safety and governance
 
