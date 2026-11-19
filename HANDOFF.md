@@ -1,16 +1,16 @@
 # MFI Business Hub Handoff
 
-- **Updated:** 2026-11-19 16:37 America/Chicago
+- **Updated:** 2026-11-19 America/Chicago
 - **Repository:** `https://github.com/JDUkahchoo/mfi-business-hub.git`
-- **Branch:** `main`
-- **Worktree:** `D:\Joshua\Claude\projects\APPS\mfi-business-hub\mfi-business-hub`
+- **Branch:** `feature/agent-definition-loader`
+- **Worktree:** `D:\Joshua\Claude\projects\APPS\mfi-business-hub\mfi-business-hub\.worktrees\agent-definition-loader`
 - **Latest merge:** `3fe3822` — merge: add organizational registry core
-- **Current owner:** Codex (publish confirmed; next milestone pending assignment)
-- **Current milestone:** Milestone 1 — organizational registry core
+- **Current owner:** Codex (local feature implementation; do not push or merge yet)
+- **Current milestone:** Milestone 1 — Cohort 1 agent-definition framework
 
 ## Current objective
 
-Deliver the first executable MFI Business Hub product capability: a read-only organizational registry for roles, seats, governed agents, and explicit authority grants. Preserve human precedence, deny authority by default, and keep agent identity independent of model providers.
+Build and visibly review a local, read-only framework for six Cohort 1 agent definitions. Keep every agent `PLANNED`, deny tools and authority by default, and do not add runtime execution or provider bindings.
 
 ## Implementation commits
 
@@ -37,6 +37,8 @@ Deliver the first executable MFI Business Hub product capability: a read-only or
 
 ## Current branch state
 
+- Local implementation is in progress on `feature/agent-definition-loader`; nothing from this feature has been pushed or merged.
+- The immutable definition-domain task is verified with 115 passing unit tests and is being preserved as a local recovery commit.
 - The organizational registry core is merged into local `main` at `3fe3822`.
 - Published: `origin/main` is at `39a49ef` (non-force push, 2e9738e..39a49ef, 14 commits). Local and remote were in sync (0 ahead, 0 behind) at 2026-11-19 16:37 America/Chicago.
 - No seat is staffed, no agent is activated, and no authority grant is present.
@@ -56,7 +58,7 @@ Deliver the first executable MFI Business Hub product capability: a read-only or
 
 Claude: complete. Verified clean worktree and 108 passing tests, pushed `main` without force, and recorded the remote commit above.
 
-Codex: organizational registry implementation and local integration are complete. Repository publishing is confirmed. Begin the next product milestone when Joshua assigns it.
+Codex: continue the approved seven-task local implementation plan. Show Joshua the representative Orchestrator manifest, shared governance prompt, role prompt, and readiness output before any push or merge decision.
 
 ## Known constraints
 
