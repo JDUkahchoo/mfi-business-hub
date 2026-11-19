@@ -1,12 +1,12 @@
 # MFI Business Hub Handoff
 
-- **Updated:** 2026-11-19 11:56 America/Chicago
+- **Updated:** 2026-11-19 12:18 America/Chicago
 - **Repository:** `https://github.com/JDUkahchoo/mfi-business-hub.git`
-- **Branch:** `chore/multi-model-development-operations`
+- **Branch:** `main`
 - **Worktree:** `D:\Joshua\Claude\projects\APPS\mfi-business-hub\mfi-business-hub`
 - **Base commit:** `2e9738e` — Initial repository structure for MFI Business Hub
-- **Last verified implementation commit:** `8093fbd` — multi-model development workflow
-- **Current owner:** Joshua (push/merge approval decision)
+- **Last verified implementation commit:** `2181c81` — local merge of the multi-model development workflow
+- **Current owner:** Claude (publish verified local `main` to `origin`)
 - **Independent reviewer:** completed; Critical and Important permission findings remediated with deny-all profiles and staged-output boundaries
 **Current milestone:** Milestone 0 — repository stabilization and existing Hub validation
 
@@ -24,7 +24,7 @@ Establish the governed development workflow for Joshua, Codex, Claude, and OpenC
 
 ## Work in progress
 
-- Branch `chore/multi-model-development-operations` contains verified local commit `8093fbd` and has not been pushed.
+- Local `main` contains verified merge commit `2181c81` and is ahead of `origin/main`.
 - Development responsibilities, branch workflow, and ADR 0001 are present.
 - OpenCode discovered the configured Gemma and Nemotron models.
 - `local-analyst` is deny-all except approved documentation and staged analyst inputs.
@@ -33,7 +33,7 @@ Establish the governed development workflow for Joshua, Codex, Claude, and OpenC
 
 ## Next action
 
-Joshua: approve or decline pushing `chore/multi-model-development-operations` to `origin` for review and later merge.
+Claude: verify local `main` is clean and ahead of `origin/main` only by the approved workflow commits, rerun the unit suite, then push `main` to `origin` without force.
 
 ## Verification evidence
 
@@ -43,6 +43,7 @@ Joshua: approve or decline pushing `chore/multi-model-development-operations` to
 - `git diff --check` — clean.
 - OpenCode agent discovery exposes the two intended functional roles with verified LM Studio IDs; general documentation is outside the agent-discovery directory.
 - Independent review completed; all Critical and Important findings were addressed.
+- Post-merge verification on local `main` — 9 tests passed; OpenCode reloaded both intended local agents and the effective-policy validator passed.
 
 ## Verification required before transfer
 
@@ -55,6 +56,7 @@ Joshua: approve or decline pushing `chore/multi-model-development-operations` to
 ## Known constraints
 
 - The repository is healthy. Restricted automation environments may need explicit access to traverse the D: working tree; do not diagnose metadata corruption from that misleading Git error alone.
+- OpenCode's background service may retain stale agent discovery across a Git branch switch or merge. Run `opencode reload` before validating newly introduced or changed project agents.
 - OpenCode 2.3.0 discovered `lmstudio/google/gemma-4-e2b` and `lmstudio/nvidia-nemotron-3.5-lightning-30b-a3b`. Gemma was installed but not loaded; Nemotron was loaded with an 8,192-token runtime context during validation.
 - Gemma 4 and Nemotron 3.5 Lightning are preferred routing assignments, not canonical MFI agent identities.
 - Historical orchestrator, prompt, or JSON-store assets referenced by earlier planning have not been located or migrated.
