@@ -1,66 +1,66 @@
 # MFI Business Hub Handoff
 
-- **Updated:** 2026-11-19 12:18 America/Chicago
+- **Updated:** 2026-11-19 14:43 America/Chicago
 - **Repository:** `https://github.com/JDUkahchoo/mfi-business-hub.git`
-- **Branch:** `main`
-- **Worktree:** `D:\Joshua\Claude\projects\APPS\mfi-business-hub\mfi-business-hub`
-- **Base commit:** `2e9738e` — Initial repository structure for MFI Business Hub
-- **Last verified implementation commit:** `2181c81` — local merge of the multi-model development workflow
-- **Current owner:** Claude (publish verified local `main` to `origin`)
-- **Independent reviewer:** completed; Critical and Important permission findings remediated with deny-all profiles and staged-output boundaries
-**Current milestone:** Milestone 0 — repository stabilization and existing Hub validation
+- **Feature branch:** `feature/organizational-registry-core`
+- **Feature worktree:** `D:\Joshua\Claude\projects\APPS\mfi-business-hub\mfi-business-hub\.worktrees\organizational-registry-core`
+- **Feature base:** `8f01bd8` — docs: hand off GitHub push to Claude
+- **Current feature writer:** Codex
+- **Main publishing owner:** Claude, limited to publishing the already-verified local `main`
+- **Current milestone:** Milestone 1 — organizational registry core
 
 ## Current objective
 
-Establish the governed development workflow for Joshua, Codex, Claude, and OpenCode local models. This includes functional role definitions, single-writer branch rules, local-agent permission boundaries, and a durable handoff.
+Deliver the first executable MFI Business Hub product capability: a read-only organizational registry for roles, seats, governed agents, and explicit authority grants. Preserve human precedence, deny authority by default, and keep agent identity independent of model providers.
 
-## Completed foundation
+## Feature branch commits
 
-- GitHub repository and `origin/main` exist at commit `2e9738e`.
-- Architecture and governance source-of-truth documents are organized under `docs/`.
-- Shared repository instructions exist in `AGENTS.md`.
-- Structural and secret-safety tests exist under `tests/unit/`.
-- The multi-model operating design and implementation plan are recorded under `docs/superpowers/`.
+- `9ab395a` — design organizational registry core
+- `4f14bc8` — plan organizational registry core
+- `615f6be` — add organizational registry domain model
+- `36c036f` — validate organizational governance rules
+- `d5ff56a` — load registry from strict JSON
+- `392ab73` — seed canonical MFI organization registry
+- `HEAD` — add registry validation CLI and this feature handoff
 
-## Work in progress
+## Completed feature work
 
-- Local `main` contains verified merge commit `2181c81` and is ahead of `origin/main`.
-- Development responsibilities, branch workflow, and ADR 0001 are present.
-- OpenCode discovered the configured Gemma and Nemotron models.
-- `local-analyst` is deny-all except approved documentation and staged analyst inputs.
-- `execution-worker` is deny-all except approved source reads and writes under `data/development/worker-output/`; it cannot run host shell commands or edit repository source.
-- No product runtime, business agent, Control Plane, or Compute Plane implementation is part of this branch.
+- Added immutable Python domain models and read-only indexes under `app/organization/`.
+- Added deterministic validation for references, seat composition, canonical IDs, duplicates, versions, provider-independent agent identity, scopes, and AI authority limits.
+- Added strict, atomic UTF-8 JSON loading with concise file, encoding, syntax, shape, enum, and semantic errors.
+- Added `config/organization/registry.json` with 12 roles, 12 vacant seats, 12 `PLANNED` role-owned agents, and zero authority grants.
+- Clarified that governance Markdown defines policy while JSON is the structured record source.
+- Added read-only `validate` and `summary` commands through `python -m app.organization.cli`.
+- Added unit coverage for domain, validation, JSON loading, canonical seed data, CLI output, error behavior, read-only behavior, and execution outside the repository directory.
 
-## Next action
+## Current branch state
 
-Claude: verify local `main` is clean and ahead of `origin/main` only by the approved workflow commits, rerun the unit suite, then push `main` to `origin` without force.
+- The feature exists only on `feature/organizational-registry-core`; it has not been pushed or merged.
+- No seat is staffed, no agent is activated, and no authority grant is present.
+- The Control Plane, authentication, database, live agent execution, routing, approvals, and audit persistence remain future work.
+- Local `main` was still four commits ahead of the locally known `origin/main` at 2026-11-19 14:43 America/Chicago. Claude's earlier non-force publishing task remains separate from this feature branch.
 
 ## Verification evidence
 
-- `python -m pytest tests/unit -q` — 9 passed.
-- `opencode debug agents | python scripts/validate_opencode_agents.py` — effective local-agent policy valid.
-- Local Markdown validation — 43 relative links resolved.
-- `git diff --check` — clean.
-- OpenCode agent discovery exposes the two intended functional roles with verified LM Studio IDs; general documentation is outside the agent-discovery directory.
-- Independent review completed; all Critical and Important findings were addressed.
-- Post-merge verification on local `main` — 9 tests passed; OpenCode reloaded both intended local agents and the effective-policy validator passed.
+- `python -m pytest tests/unit -q` — 93 passed after the CLI implementation.
+- `python -m app.organization.cli validate` — `Registry valid.`
+- `python -m app.organization.cli summary` — `Registry valid: 12 roles, 12 seats, 12 agents, 0 authority grants.`
+- Test evidence confirms both CLI commands leave the canonical JSON bytes and modification time unchanged.
+- `git diff --check` was clean after Tasks 1 through 4; final branch verification is required after this handoff commit.
 
-## Verification required before transfer
+## Next action
 
-1. Run `python -m pytest tests/unit -q`.
-2. Validate every local Markdown link.
-3. Inspect `git status`, `git diff --check`, and the complete branch diff.
-4. Confirm OpenCode role files cannot push, merge, access secrets, or escape the assigned workspace.
-5. Record the last verified implementation commit and remaining next action in a follow-up handoff commit; refer to the containing handoff commit as `HEAD` rather than attempting a self-referential hash.
+Codex: complete final branch verification, prepare the review package, and obtain a fresh independent review of `main...HEAD`. Address every Critical or Important finding with a failing regression test before changing implementation. Then present Joshua with the verified merge choices; do not merge or push without his direction.
+
+Claude: independently verify and publish the already-approved local `main` to `origin/main` without force. Do not merge or publish the Codex feature branch unless Joshua assigns that action.
 
 ## Known constraints
 
-- The repository is healthy. Restricted automation environments may need explicit access to traverse the D: working tree; do not diagnose metadata corruption from that misleading Git error alone.
-- OpenCode's background service may retain stale agent discovery across a Git branch switch or merge. Run `opencode reload` before validating newly introduced or changed project agents.
-- OpenCode 2.3.0 discovered `lmstudio/google/gemma-4-e2b` and `lmstudio/nvidia-nemotron-3.5-lightning-30b-a3b`. Gemma was installed but not loaded; Nemotron was loaded with an 8,192-token runtime context during validation.
-- Gemma 4 and Nemotron 3.5 Lightning are preferred routing assignments, not canonical MFI agent identities.
-- Historical orchestrator, prompt, or JSON-store assets referenced by earlier planning have not been located or migrated.
+- Restricted automation environments may need explicit access to traverse the D: working tree; a restricted Git traversal error does not imply repository corruption.
+- OpenCode's background service may retain stale agent discovery across branch switches; run `opencode reload` before validating changed OpenCode agents.
+- Gemma and Nemotron assignments remain routing preferences, not canonical MFI agent identities.
+- The JSON registry is an interim version-controlled store until a deliberate database migration milestone.
 
 ## Transfer protocol
 
-Before a new writer edits this branch, the current owner must update the timestamp, owner, completed work, verification evidence, and next action. Reviewers remain read-only and return findings rather than editing the writer's branch.
+Before another writer edits this feature branch, update the timestamp, owner, completed work, verification evidence, and next action. Reviewers remain read-only and return findings rather than editing the writer's branch.
