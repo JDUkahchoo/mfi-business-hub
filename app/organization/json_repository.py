@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import json
+import re
 from collections.abc import Mapping
 from pathlib import Path
+from types import SimpleNamespace
 from typing import Any
 
 from .errors import RegistryLoadError, RegistryValidationError, ValidationFinding
@@ -28,6 +30,21 @@ _TOP_LEVEL_KEYS = {
     "agents",
     "authority_grants",
 }
+
+
+class _DuplicateJsonMemberError(ValueError):
+    def __init__(self, member: str) -> None:
+        self.member = member
+        super().__init__(f"duplicate JSON member: {member}")
+
+
+def _reject_duplicate_members(pairs: list[tuple[str, object]]) -> dict[str, object]:
+    result: dict[str, object] = {}
+    for key, value in pairs:
+        if key in result:
+            raise _DuplicateJsonMemberError(key)
+        result[key] = value
+    return result
 
 
 def _finding(findings: list[ValidationFinding], path: str, message: str) -> None:
@@ -108,8 +125,12 @@ def _record_list(
     return value
 
 
-def _parse_roles(values: list[object], findings: list[ValidationFinding]) -> list[RoleDefinition]:
+def _parse_roles(
+    values: list[object],
+    findings: list[ValidationFinding],
+) -> tuple[list[RoleDefinition], list[int]]:
     roles: list[RoleDefinition] = []
+    positions: list[int] = []
     for index, value in enumerate(values):
         path = f"roles[{index}]"
         before = len(findings)
@@ -129,11 +150,16 @@ def _parse_roles(values: list[object], findings: list[ValidationFinding]) -> lis
         pillar_id = _enum_value(PillarId, raw_pillar, f"{path}.pillar_id", findings)
         if len(findings) == before:
             roles.append(RoleDefinition(role_id, display_name, description, pillar_id))  # type: ignore[arg-type]
-    return roles
+            positions.append(index)
+    return roles, positions
 
 
-def _parse_seats(values: list[object], findings: list[ValidationFinding]) -> list[SeatAssignment]:
+def _parse_seats(
+    values: list[object],
+    findings: list[ValidationFinding],
+) -> tuple[list[SeatAssignment], list[int]]:
     seats: list[SeatAssignment] = []
+    positions: list[int] = []
     for index, value in enumerate(values):
         path = f"seats[{index}]"
         before = len(findings)
@@ -169,11 +195,16 @@ def _parse_seats(values: list[object], findings: list[ValidationFinding]) -> lis
                     agent_ids,
                 )
             )
-    return seats
+            positions.append(index)
+    return seats, positions
 
 
-def _parse_agents(values: list[object], findings: list[ValidationFinding]) -> list[AgentDefinition]:
+def _parse_agents(
+    values: list[object],
+    findings: list[ValidationFinding],
+) -> tuple[list[AgentDefinition], list[int]]:
     agents: list[AgentDefinition] = []
+    positions: list[int] = []
     required = {
         "id",
         "display_name",
@@ -210,11 +241,16 @@ def _parse_agents(values: list[object], findings: list[ValidationFinding]) -> li
                     owner_id,  # type: ignore[arg-type]
                 )
             )
-    return agents
+            positions.append(index)
+    return agents, positions
 
 
-def _parse_grants(values: list[object], findings: list[ValidationFinding]) -> list[AuthorityGrant]:
+def _parse_grants(
+    values: list[object],
+    findings: list[ValidationFinding],
+) -> tuple[list[AuthorityGrant], list[int]]:
     grants: list[AuthorityGrant] = []
+    positions: list[int] = []
     required = {"id", "subject_type", "subject_id", "level", "scope"}
     for index, value in enumerate(values):
         path = f"authority_grants[{index}]"
@@ -248,7 +284,39 @@ def _parse_grants(values: list[object], findings: list[ValidationFinding]) -> li
                     requires_human_approval,
                 )
             )
-    return grants
+            positions.append(index)
+    return grants, positions
+
+
+def _raw_ids(values: list[object]) -> set[str]:
+    return {
+        value["id"]
+        for value in values
+        if isinstance(value, dict) and isinstance(value.get("id"), str)
+    }
+
+
+def _remap_semantic_finding(
+    finding: ValidationFinding,
+    positions: Mapping[str, list[int]],
+) -> ValidationFinding:
+    match = re.match(r"^(roles|seats|agents|authority_grants)\[(\d+)\](.*)$", finding.path)
+    if not match:
+        return finding
+    collection, compact_index, suffix = match.groups()
+    original_index = positions[collection][int(compact_index)]
+    return ValidationFinding(f"{collection}[{original_index}]{suffix}", finding.message)
+
+
+def _reference_is_uncertain(
+    finding: ValidationFinding,
+    raw_ids: Mapping[str, set[str]],
+) -> bool:
+    for collection, label in (("roles", "role"), ("seats", "seat"), ("agents", "agent")):
+        prefix = f"unknown {label} ID: "
+        if finding.message.startswith(prefix):
+            return finding.message.removeprefix(prefix) in raw_ids[collection]
+    return False
 
 
 def parse_registry_data(data: object) -> OrganizationRegistry:
@@ -268,19 +336,41 @@ def parse_registry_data(data: object) -> OrganizationRegistry:
     elif schema_version != 1:
         _finding(findings, "schema_version", "unsupported version; expected 1")
 
-    roles = _parse_roles(_record_list(data, "roles", findings), findings)
-    seats = _parse_seats(_record_list(data, "seats", findings), findings)
-    agents = _parse_agents(_record_list(data, "agents", findings), findings)
-    grants = _parse_grants(_record_list(data, "authority_grants", findings), findings)
+    role_values = _record_list(data, "roles", findings)
+    seat_values = _record_list(data, "seats", findings)
+    agent_values = _record_list(data, "agents", findings)
+    grant_values = _record_list(data, "authority_grants", findings)
+
+    roles, role_positions = _parse_roles(role_values, findings)
+    seats, seat_positions = _parse_seats(seat_values, findings)
+    agents, agent_positions = _parse_agents(agent_values, findings)
+    grants, grant_positions = _parse_grants(grant_values, findings)
+
+    registry_view = SimpleNamespace(
+        roles=tuple(roles),
+        seats=tuple(seats),
+        agents=tuple(agents),
+        authority_grants=tuple(grants),
+    )
+    positions = {
+        "roles": role_positions,
+        "seats": seat_positions,
+        "agents": agent_positions,
+        "authority_grants": grant_positions,
+    }
+    raw_ids = {
+        "roles": _raw_ids(role_values),
+        "seats": _raw_ids(seat_values),
+        "agents": _raw_ids(agent_values),
+    }
+    for semantic_finding in validate_registry(registry_view):  # type: ignore[arg-type]
+        if not _reference_is_uncertain(semantic_finding, raw_ids):
+            findings.append(_remap_semantic_finding(semantic_finding, positions))
 
     if findings:
         raise RegistryValidationError(findings)
 
-    registry = OrganizationRegistry(tuple(roles), tuple(seats), tuple(agents), tuple(grants))
-    semantic_findings = validate_registry(registry)
-    if semantic_findings:
-        raise RegistryValidationError(semantic_findings)
-    return registry
+    return OrganizationRegistry(tuple(roles), tuple(seats), tuple(agents), tuple(grants))
 
 
 class JsonOrganizationRepository:
@@ -298,7 +388,11 @@ class JsonOrganizationRepository:
             raise RegistryLoadError(f"cannot read registry: {self.path}: {error}") from error
 
         try:
-            data = json.loads(text)
+            data = json.loads(text, object_pairs_hook=_reject_duplicate_members)
+        except _DuplicateJsonMemberError as error:
+            raise RegistryLoadError(
+                f"malformed JSON in {self.path}: {error}"
+            ) from error
         except json.JSONDecodeError as error:
             raise RegistryLoadError(
                 f"malformed JSON in {self.path}: line {error.lineno}, "

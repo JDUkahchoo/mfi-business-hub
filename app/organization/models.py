@@ -3,7 +3,23 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from enum import Enum
 from types import MappingProxyType
-from typing import Mapping
+from typing import Mapping, Protocol, TypeVar
+
+
+class _Identified(Protocol):
+    id: str
+
+
+_Record = TypeVar("_Record", bound=_Identified)
+
+
+def _unique_index(records: tuple[_Record, ...], label: str) -> Mapping[str, _Record]:
+    index: dict[str, _Record] = {}
+    for record in records:
+        if record.id in index:
+            raise ValueError(f"duplicate {label} ID: {record.id}")
+        index[record.id] = record
+    return MappingProxyType(index)
 
 
 class PillarId(str, Enum):
@@ -99,18 +115,19 @@ class OrganizationRegistry:
         object.__setattr__(
             self,
             "_role_index",
-            MappingProxyType({role.id: role for role in self.roles}),
+            _unique_index(self.roles, "roles"),
         )
         object.__setattr__(
             self,
             "_seat_index",
-            MappingProxyType({seat.id: seat for seat in self.seats}),
+            _unique_index(self.seats, "seats"),
         )
         object.__setattr__(
             self,
             "_agent_index",
-            MappingProxyType({agent.id: agent for agent in self.agents}),
+            _unique_index(self.agents, "agents"),
         )
+        _unique_index(self.authority_grants, "authority_grants")
 
     @property
     def role_index(self) -> Mapping[str, RoleDefinition]:

@@ -1,4 +1,5 @@
 import copy
+import json
 from pathlib import Path
 
 import pytest
@@ -249,3 +250,70 @@ def test_rejects_unsupported_schema_version(
 
     assert "schema_version" in _finding_paths(caught.value)
     assert "unsupported version" in str(caught.value)
+
+
+def test_rejects_duplicate_top_level_json_member(
+    tmp_path: Path,
+    valid_registry_data: dict[str, object],
+) -> None:
+    text = json.dumps(valid_registry_data).replace(
+        '"authority_grants": []',
+        '"authority_grants": [], "authority_grants": []',
+    )
+    path = tmp_path / "duplicate-top-level.json"
+    path.write_text(text, encoding="utf-8")
+
+    with pytest.raises(RegistryLoadError) as caught:
+        JsonOrganizationRepository(path).load()
+
+    assert "duplicate JSON member" in str(caught.value)
+    assert "authority_grants" in str(caught.value)
+
+
+def test_rejects_duplicate_nested_json_member(
+    tmp_path: Path,
+    valid_registry_data: dict[str, object],
+) -> None:
+    data = copy.deepcopy(valid_registry_data)
+    data["authority_grants"] = [
+        {
+            "id": "research-read",
+            "subject_type": "AGENT",
+            "subject_id": "mfi-investments-lead",
+            "level": "READ",
+            "scope": "research.documents",
+        }
+    ]
+    text = json.dumps(data).replace(
+        '"level": "READ"',
+        '"level": "READ", "level": "APPROVE"',
+    )
+    path = tmp_path / "duplicate-nested.json"
+    path.write_text(text, encoding="utf-8")
+
+    with pytest.raises(RegistryLoadError) as caught:
+        JsonOrganizationRepository(path).load()
+
+    assert "duplicate JSON member" in str(caught.value)
+    assert "level" in str(caught.value)
+
+
+def test_combines_shape_and_independent_semantic_findings_at_original_paths(
+    valid_registry_data: dict[str, object],
+) -> None:
+    data = copy.deepcopy(valid_registry_data)
+    del data["roles"][0]["description"]  # type: ignore[index]
+    malformed_agent = copy.deepcopy(data["agents"][0])  # type: ignore[index]
+    malformed_agent["id"] = "mfi-unfinished-agent"
+    del malformed_agent["purpose"]
+    data["agents"][0]["version"] = "one"  # type: ignore[index]
+    data["agents"].insert(0, malformed_agent)  # type: ignore[union-attr]
+
+    with pytest.raises(RegistryValidationError) as caught:
+        parse_registry_data(data)
+
+    assert tuple((finding.path, finding.message) for finding in caught.value.findings) == (
+        ("agents[0].purpose", "is required"),
+        ("agents[1].version", "must be semantic version x.y.z"),
+        ("roles[0].description", "is required"),
+    )

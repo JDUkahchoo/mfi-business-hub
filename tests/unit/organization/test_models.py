@@ -146,3 +146,43 @@ def test_repository_protocol_accepts_load_implementation() -> None:
 
     assert isinstance(repository, OrganizationRepository)
     assert repository.load() is registry
+
+
+@pytest.mark.parametrize("collection_name", ["roles", "seats", "agents", "authority_grants"])
+def test_registry_constructor_rejects_duplicate_ids(collection_name: str) -> None:
+    role = RoleDefinition(
+        id="investments-leadership",
+        display_name="Investments Leadership",
+        description="Coordinates investment activity.",
+    )
+    seat = SeatAssignment(
+        id="investments-leadership-seat",
+        role_id=role.id,
+        seat_type=SeatType.VACANT,
+    )
+    agent = AgentDefinition(
+        id="mfi-investments-lead",
+        display_name="MFI Investments Lead",
+        purpose="Supports investment planning.",
+        status=AgentStatus.PLANNED,
+        version="0.1.0",
+        owner_type=OwnerType.ROLE,
+        owner_id=role.id,
+    )
+    grant = AuthorityGrant(
+        id="research-read",
+        subject_type=GrantSubjectType.AGENT,
+        subject_id=agent.id,
+        level=AuthorityLevel.READ,
+        scope="research.documents",
+    )
+    collections = {
+        "roles": (role,),
+        "seats": (seat,),
+        "agents": (agent,),
+        "authority_grants": (grant,),
+    }
+    collections[collection_name] = collections[collection_name] * 2
+
+    with pytest.raises(ValueError, match=f"duplicate {collection_name} ID"):
+        OrganizationRegistry(**collections)

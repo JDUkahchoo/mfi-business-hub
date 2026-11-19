@@ -1,4 +1,5 @@
 from dataclasses import replace
+from types import SimpleNamespace
 import pytest
 
 from app.organization.errors import (
@@ -212,9 +213,16 @@ def test_rejects_duplicate_ids(
         )
     else:
         first = getattr(valid_registry, collection_name)[0]
-    registry = replace(valid_registry, **{collection_name: (first, first)})
+    collections = {
+        "roles": valid_registry.roles,
+        "seats": valid_registry.seats,
+        "agents": valid_registry.agents,
+        "authority_grants": valid_registry.authority_grants,
+    }
+    collections[collection_name] = (first, first)
+    registry = SimpleNamespace(**collections)
 
-    paths = [finding.path for finding in validate_registry(registry)]
+    paths = [finding.path for finding in validate_registry(registry)]  # type: ignore[arg-type]
 
     assert f"{collection_name}[0].id" in paths
     assert f"{collection_name}[1].id" in paths
@@ -363,3 +371,116 @@ def test_validation_returns_all_independent_findings_in_stable_order(
 
     assert first == expected
     assert second == expected
+
+
+@pytest.mark.parametrize(
+    ("level", "expected_path"),
+    [
+        (AuthorityLevel.APPROVE, "authority_grants[0].level"),
+        (
+            AuthorityLevel.EXECUTE,
+            "authority_grants[0].requires_human_approval",
+        ),
+    ],
+)
+def test_ai_only_seat_receives_agent_authority_restrictions(
+    valid_registry: OrganizationRegistry,
+    level: AuthorityLevel,
+    expected_path: str,
+) -> None:
+    seat = replace(
+        valid_registry.seats[0],
+        seat_type=SeatType.AI,
+        agent_ids=(valid_registry.agents[0].id,),
+    )
+    grant = AuthorityGrant(
+        id=f"research-{level.value.lower()}",
+        subject_type=GrantSubjectType.SEAT,
+        subject_id=seat.id,
+        level=level,
+        scope="research.documents",
+        requires_human_approval=False,
+    )
+    registry = replace(valid_registry, seats=(seat,), authority_grants=(grant,))
+
+    paths = [finding.path for finding in validate_registry(registry)]
+
+    assert expected_path in paths
+
+
+@pytest.mark.parametrize(
+    ("seat_type", "human_name", "agent_ids"),
+    [
+        (SeatType.HUMAN, "Joshua", ()),
+        (SeatType.HYBRID, "Joshua", ("mfi-investments-lead",)),
+    ],
+)
+def test_human_owned_seat_can_receive_approve_and_unguarded_execute(
+    valid_registry: OrganizationRegistry,
+    seat_type: SeatType,
+    human_name: str,
+    agent_ids: tuple[str, ...],
+) -> None:
+    seat = replace(
+        valid_registry.seats[0],
+        seat_type=seat_type,
+        human_name=human_name,
+        agent_ids=agent_ids,
+    )
+    grants = (
+        AuthorityGrant(
+            id="research-approve",
+            subject_type=GrantSubjectType.SEAT,
+            subject_id=seat.id,
+            level=AuthorityLevel.APPROVE,
+            scope="research.documents",
+        ),
+        AuthorityGrant(
+            id="research-execute",
+            subject_type=GrantSubjectType.SEAT,
+            subject_id=seat.id,
+            level=AuthorityLevel.EXECUTE,
+            scope="research.documents",
+            requires_human_approval=False,
+        ),
+    )
+    registry = replace(valid_registry, seats=(seat,), authority_grants=grants)
+
+    assert validate_registry(registry) == ()
+
+
+@pytest.mark.parametrize(
+    ("seat_type", "human_name", "agent_ids", "is_valid_owner"),
+    [
+        (SeatType.HUMAN, "Joshua", (), True),
+        (SeatType.HYBRID, "Joshua", ("mfi-investments-lead",), True),
+        (SeatType.AI, None, ("mfi-investments-lead",), False),
+        (SeatType.VACANT, None, (), False),
+    ],
+)
+def test_agent_seat_owner_must_have_a_human(
+    valid_registry: OrganizationRegistry,
+    seat_type: SeatType,
+    human_name: str | None,
+    agent_ids: tuple[str, ...],
+    is_valid_owner: bool,
+) -> None:
+    seat = replace(
+        valid_registry.seats[0],
+        seat_type=seat_type,
+        human_name=human_name,
+        agent_ids=agent_ids,
+    )
+    agent = replace(
+        valid_registry.agents[0],
+        owner_type=OwnerType.SEAT,
+        owner_id=seat.id,
+    )
+    registry = replace(valid_registry, seats=(seat,), agents=(agent,))
+
+    paths = [finding.path for finding in validate_registry(registry)]
+
+    if is_valid_owner:
+        assert "agents[0].owner_id" not in paths
+    else:
+        assert "agents[0].owner_id" in paths

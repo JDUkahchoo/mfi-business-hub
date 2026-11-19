@@ -1,6 +1,6 @@
 # MFI Business Hub Handoff
 
-- **Updated:** 2026-11-19 14:43 America/Chicago
+- **Updated:** 2026-11-19 14:56 America/Chicago
 - **Repository:** `https://github.com/JDUkahchoo/mfi-business-hub.git`
 - **Feature branch:** `feature/organizational-registry-core`
 - **Feature worktree:** `D:\Joshua\Claude\projects\APPS\mfi-business-hub\mfi-business-hub\.worktrees\organizational-registry-core`
@@ -21,7 +21,8 @@ Deliver the first executable MFI Business Hub product capability: a read-only or
 - `36c036f` — validate organizational governance rules
 - `d5ff56a` — load registry from strict JSON
 - `392ab73` — seed canonical MFI organization registry
-- `HEAD` — add registry validation CLI and this feature handoff
+- `107f712` — add registry validation CLI and feature handoff
+- `HEAD` — remediate independent review findings
 
 ## Completed feature work
 
@@ -32,6 +33,7 @@ Deliver the first executable MFI Business Hub product capability: a read-only or
 - Clarified that governance Markdown defines policy while JSON is the structured record source.
 - Added read-only `validate` and `summary` commands through `python -m app.organization.cli`.
 - Added unit coverage for domain, validation, JSON loading, canonical seed data, CLI output, error behavior, read-only behavior, and execution outside the repository directory.
+- Remediated all six Important independent-review findings with regression coverage.
 
 ## Current branch state
 
@@ -42,15 +44,16 @@ Deliver the first executable MFI Business Hub product capability: a read-only or
 
 ## Verification evidence
 
-- `python -m pytest tests/unit -q` — 93 passed after the CLI implementation.
+- `python -m pytest tests/unit -q` — 108 passed after independent-review remediation.
 - `python -m app.organization.cli validate` — `Registry valid.`
 - `python -m app.organization.cli summary` — `Registry valid: 12 roles, 12 seats, 12 agents, 0 authority grants.`
 - Test evidence confirms both CLI commands leave the canonical JSON bytes and modification time unchanged.
-- `git diff --check` was clean after Tasks 1 through 4; final branch verification is required after this handoff commit.
+- Independent whole-branch review completed; no Critical findings and all six Important findings were remediated.
+- Final `git diff --check`, CLI, and clean-worktree verification remain required after the review-fix commit.
 
 ## Next action
 
-Codex: complete final branch verification, prepare the review package, and obtain a fresh independent review of `main...HEAD`. Address every Critical or Important finding with a failing regression test before changing implementation. Then present Joshua with the verified merge choices; do not merge or push without his direction.
+Codex: commit the review remediations, complete final branch verification, and present Joshua with the verified merge choices. Do not merge or push without his direction.
 
 Claude: independently verify and publish the already-approved local `main` to `origin/main` without force. Do not merge or publish the Codex feature branch unless Joshua assigns that action.
 

@@ -72,6 +72,7 @@ def validate_registry(registry: OrganizationRegistry) -> tuple[ValidationFinding
     role_ids = {role.id for role in registry.roles}
     seat_ids = {seat.id for seat in registry.seats}
     agent_ids = {agent.id for agent in registry.agents}
+    seat_by_id = {seat.id: seat for seat in registry.seats}
 
     for index, seat in enumerate(registry.seats):
         if seat.role_id not in role_ids:
@@ -132,6 +133,15 @@ def validate_registry(registry: OrganizationRegistry) -> tuple[ValidationFinding
                     f"unknown {agent.owner_type.value.lower()} ID: {agent.owner_id}",
                 )
             )
+        elif agent.owner_type is OwnerType.SEAT:
+            owner_seat = seat_by_id[agent.owner_id]
+            if owner_seat.seat_type not in (SeatType.HUMAN, SeatType.HYBRID):
+                findings.append(
+                    ValidationFinding(
+                        f"agents[{index}].owner_id",
+                        "accountable owner seat must be HUMAN or HYBRID",
+                    )
+                )
         if not _SEMANTIC_VERSION.fullmatch(agent.version):
             findings.append(
                 ValidationFinding(
@@ -170,8 +180,14 @@ def validate_registry(registry: OrganizationRegistry) -> tuple[ValidationFinding
                     "must be an explicit lowercase dotted scope without wildcards",
                 )
             )
+        subject_is_agent_controlled = grant.subject_type is GrantSubjectType.AGENT
+        if grant.subject_type is GrantSubjectType.SEAT:
+            subject_seat = seat_by_id.get(grant.subject_id)
+            subject_is_agent_controlled = bool(
+                subject_seat and subject_seat.seat_type is SeatType.AI
+            )
         if (
-            grant.subject_type is GrantSubjectType.AGENT
+            subject_is_agent_controlled
             and grant.level is AuthorityLevel.APPROVE
         ):
             findings.append(
@@ -181,7 +197,7 @@ def validate_registry(registry: OrganizationRegistry) -> tuple[ValidationFinding
                 )
             )
         if (
-            grant.subject_type is GrantSubjectType.AGENT
+            subject_is_agent_controlled
             and grant.level is AuthorityLevel.EXECUTE
             and not grant.requires_human_approval
         ):

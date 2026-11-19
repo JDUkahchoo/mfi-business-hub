@@ -1,10 +1,12 @@
 from pathlib import Path
+import re
 
 from app.organization.json_repository import JsonOrganizationRepository
 from app.organization.models import AgentStatus, OwnerType, PillarId, SeatType
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 REGISTRY_PATH = REPO_ROOT / "config" / "organization" / "registry.json"
+CATALOG_PATH = REPO_ROOT / "docs" / "governance" / "AGENT_REGISTRY.md"
 
 EXPECTED_AGENT_IDS = {
     "mfi-orchestrator",
@@ -20,6 +22,36 @@ EXPECTED_AGENT_IDS = {
     "mfi-coo-copilot",
     "mfi-cto-copilot",
 }
+
+EXPECTED_AGENT_ROLES = {
+    "mfi-orchestrator": "enterprise-orchestration",
+    "mfi-qa-auditor": "quality-assurance",
+    "mfi-infrastructure-lead": "infrastructure-leadership",
+    "mfi-tech-entertainment-lead": "technology-gaming-entertainment-leadership",
+    "mfi-investments-lead": "investments-leadership",
+    "mfi-incubation-lead": "incubation-leadership",
+    "mfi-business-development-lead": "business-development-leadership",
+    "mfi-government-business-lead": "government-business-leadership",
+    "mfi-private-sector-lead": "private-sector-leadership",
+    "mfi-cfo-copilot": "finance-leadership",
+    "mfi-coo-copilot": "operations-leadership",
+    "mfi-cto-copilot": "technology-leadership",
+}
+
+EXPECTED_SEAT_ROLES = {
+    f"{role_id}-seat": role_id for role_id in EXPECTED_AGENT_ROLES.values()
+}
+
+
+def _catalog_agent_statuses() -> dict[str, str]:
+    row = re.compile(
+        r"^\| `(?P<id>mfi-[^`]+)` \|.*\| `(?P<status>PLANNED|DRAFT|TESTING|ACTIVE|SUSPENDED|RETIRED)` \|$",
+        re.MULTILINE,
+    )
+    return {
+        match.group("id"): match.group("status")
+        for match in row.finditer(CATALOG_PATH.read_text(encoding="utf-8"))
+    }
 
 
 def test_committed_seed_registry_matches_approved_organization() -> None:
@@ -48,6 +80,11 @@ def test_committed_seed_registry_matches_approved_organization() -> None:
         assert seat.agent_ids == ()
 
     assert {agent.id for agent in registry.agents} == EXPECTED_AGENT_IDS
+    assert {agent.id: agent.owner_id for agent in registry.agents} == EXPECTED_AGENT_ROLES
+    assert {seat.id: seat.role_id for seat in registry.seats} == EXPECTED_SEAT_ROLES
+    assert _catalog_agent_statuses() == {
+        agent.id: agent.status.value for agent in registry.agents
+    }
     for agent in registry.agents:
         assert agent.status is AgentStatus.PLANNED
         assert agent.version == "0.1.0"
