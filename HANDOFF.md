@@ -4,9 +4,9 @@
 - **Repository:** `https://github.com/JDUkahchoo/mfi-business-hub.git`
 - **Branch:** `main`
 - **Worktree:** `D:\Joshua\Claude\projects\APPS\mfi-business-hub\mfi-business-hub`
-- **Latest merge:** `3fe3822` â€” merge: add organizational registry core
+- **Latest merge:** `3fe3822` — merge: add organizational registry core
 - **Current owner:** Codex (publish confirmed; next milestone pending assignment)
-- **Current milestone:** Milestone 1 â€” organizational registry core
+- **Current milestone:** Milestone 1 — organizational registry core
 
 ## Current objective
 
@@ -14,15 +14,15 @@ Deliver the first executable MFI Business Hub product capability: a read-only or
 
 ## Implementation commits
 
-- `9ab395a` â€” design organizational registry core
-- `4f14bc8` â€” plan organizational registry core
-- `615f6be` â€” add organizational registry domain model
-- `36c036f` â€” validate organizational governance rules
-- `d5ff56a` â€” load registry from strict JSON
-- `392ab73` â€” seed canonical MFI organization registry
-- `107f712` â€” add registry validation CLI and feature handoff
-- `ef64806` â€” remediate independent review findings
-- `3fe3822` â€” merge the verified feature into local `main`
+- `9ab395a` — design organizational registry core
+- `4f14bc8` — plan organizational registry core
+- `615f6be` — add organizational registry domain model
+- `36c036f` — validate organizational governance rules
+- `d5ff56a` — load registry from strict JSON
+- `392ab73` — seed canonical MFI organization registry
+- `107f712` — add registry validation CLI and feature handoff
+- `ef64806` — remediate independent review findings
+- `3fe3822` — merge the verified feature into local `main`
 
 ## Completed feature work
 
@@ -45,9 +45,9 @@ Deliver the first executable MFI Business Hub product capability: a read-only or
 
 ## Verification evidence
 
-- Post-merge `python -m pytest tests/unit -q` â€” 108 passed.
-- `python -m app.organization.cli validate` â€” `Registry valid.`
-- `python -m app.organization.cli summary` â€” `Registry valid: 12 roles, 12 seats, 12 agents, 0 authority grants.`
+- Post-merge `python -m pytest tests/unit -q` — 108 passed.
+- `python -m app.organization.cli validate` — `Registry valid.`
+- `python -m app.organization.cli summary` — `Registry valid: 12 roles, 12 seats, 12 agents, 0 authority grants.`
 - Test evidence confirms both CLI commands leave the canonical JSON bytes and modification time unchanged.
 - Independent whole-branch review completed; no Critical findings and all six Important findings were remediated.
 - Post-merge `git diff --check` and clean-worktree verification passed.
