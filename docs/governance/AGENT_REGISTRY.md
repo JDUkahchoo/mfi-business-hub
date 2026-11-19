@@ -2,7 +2,9 @@
 
 ## Purpose
 
-This registry defines canonical agent identities and planned rollout. It is the identity source of truth; runtime configuration, prompts, and OpenCode definitions reference these IDs rather than creating competing names.
+This governance catalog defines the policy meaning of canonical agent identities and their planned rollout. The structured records in [`config/organization/registry.json`](../../config/organization/registry.json) are the machine-readable source for roles, seats, agents, lifecycle status, and explicit authority grants. Runtime configuration, prompts, and OpenCode definitions reference those canonical IDs rather than creating competing names.
+
+Governance rules and lifecycle semantics remain authoritative in this document and the related governance documents. Structured record changes begin in the JSON registry and include any corresponding catalog update in the same reviewed commit; policy changes begin in governance documentation and include any required structured-record change in that commit.
 
 ## Status legend
 
