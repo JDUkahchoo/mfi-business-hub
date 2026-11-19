@@ -2,8 +2,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 
-REQUIRED = [
-    "README.md", "AGENTS.md", "requirements.txt", ".env.example", ".gitignore",
+REQUIRED_FILES = [
+    "README.md", "AGENTS.md", "HANDOFF.md", "requirements.txt", ".env.example", ".gitignore",
     "docs/README.md", "docs/ROADMAP.md",
     "docs/architecture/ARCHITECTURE.md",
     "docs/architecture/HYBRID_ARCHITECTURE.md",
@@ -12,8 +12,29 @@ REQUIRED = [
     "docs/governance/AGENT_STANDARD.md",
     "docs/governance/AUTHORITY_MATRIX.md",
     "docs/governance/AGENT_REGISTRY.md",
-    "app/core/model_router", "app/integrations/lm_studio", "prompts/pillar_leads",
-    "data/knowledge", "web/README.md", "worker/README.md", ".opencode/agents/README.md",
+    "docs/operations/AI_DEVELOPMENT_ROLES.md",
+    "docs/operations/BRANCH_WORKFLOW.md",
+    "docs/decisions/0001-multi-model-development-operating-model.md",
+    "web/README.md", "worker/README.md", ".opencode/README.md",
+    ".opencode/agents/local-analyst.md",
+    ".opencode/agents/execution-worker.md",
+    "data/development/worker-output/.gitkeep",
+    "data/knowledge/analyst-input/.gitkeep",
+]
+
+REQUIRED_DIRECTORIES = [
+    "app/core/model_router",
+    "app/integrations/lm_studio",
+    "config",
+    "data/development/worker-output",
+    "data/knowledge",
+    "data/knowledge/analyst-input",
+    "docs/decisions",
+    "docs/operations",
+    "docs/superpowers/plans",
+    "docs/superpowers/specs",
+    "prompts/pillar_leads",
+    "scripts",
 ]
 
 LEGACY_DOCUMENT_PATHS = [
@@ -22,6 +43,7 @@ LEGACY_DOCUMENT_PATHS = [
     "docs/AGENT_STANDARD.md",
     "docs/AUTHORITY_MATRIX.md",
     "docs/AGENT_REGISTRY.md",
+    ".opencode/agents/README.md",
 ]
 
 
@@ -37,8 +59,13 @@ def _env_keys_with_values(text):
     return offenders
 
 
-def test_required_paths_exist():
-    missing = [p for p in REQUIRED if not (ROOT / p).exists()]
+def test_required_files_exist_as_files():
+    missing = [p for p in REQUIRED_FILES if not (ROOT / p).is_file()]
+    assert not missing, missing
+
+
+def test_required_directories_exist_as_directories():
+    missing = [p for p in REQUIRED_DIRECTORIES if not (ROOT / p).is_dir()]
     assert not missing, missing
 
 

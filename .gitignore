@@ -14,6 +14,10 @@ __pycache__/
 # Runtime data / logs (directory kept via .gitkeep)
 data/logs/*
 !data/logs/.gitkeep
+data/development/worker-output/*
+!data/development/worker-output/.gitkeep
+data/knowledge/analyst-input/*
+!data/knowledge/analyst-input/.gitkeep
 *.log
 
 # Local models
@@ -28,3 +32,7 @@ models/
 Thumbs.db
 .idea/
 .vscode/
+
+# Agent scratch work and local Git worktrees
+.superpowers/
+.worktrees/
