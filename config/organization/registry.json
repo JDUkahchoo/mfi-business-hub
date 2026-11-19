@@ -1,0 +1,242 @@
+{
+  "schema_version": 1,
+  "roles": [
+    {
+      "id": "enterprise-orchestration",
+      "display_name": "Enterprise Orchestration",
+      "description": "Coordinates governed work across MFI business functions."
+    },
+    {
+      "id": "quality-assurance",
+      "display_name": "Quality Assurance",
+      "description": "Reviews evidence, quality, policy compliance, and audit completeness."
+    },
+    {
+      "id": "infrastructure-leadership",
+      "display_name": "Infrastructure & Supply Chain Leadership",
+      "description": "Coordinates infrastructure and supply-chain planning and execution support.",
+      "pillar_id": "infrastructure-supply-chain"
+    },
+    {
+      "id": "technology-gaming-entertainment-leadership",
+      "display_name": "Technology / Gaming / Entertainment Leadership",
+      "description": "Coordinates technology, gaming, entertainment, platform, and intellectual-property work.",
+      "pillar_id": "technology-gaming-entertainment"
+    },
+    {
+      "id": "investments-leadership",
+      "display_name": "Investments Leadership",
+      "description": "Coordinates investment research, portfolio activity, acquisitions, and capital-allocation support.",
+      "pillar_id": "investments"
+    },
+    {
+      "id": "incubation-leadership",
+      "display_name": "Incubation Leadership",
+      "description": "Coordinates validation and development of new ventures.",
+      "pillar_id": "incubation"
+    },
+    {
+      "id": "business-development-leadership",
+      "display_name": "Business Development Leadership",
+      "description": "Coordinates pipeline development across pillars and market channels."
+    },
+    {
+      "id": "government-business-leadership",
+      "display_name": "Government Business Leadership",
+      "description": "Coordinates government-market opportunities across MFI pillars."
+    },
+    {
+      "id": "private-sector-leadership",
+      "display_name": "Private-Sector Business Leadership",
+      "description": "Coordinates commercial opportunities across MFI pillars."
+    },
+    {
+      "id": "finance-leadership",
+      "display_name": "Finance Leadership",
+      "description": "Owns accountable human finance leadership for MFI."
+    },
+    {
+      "id": "operations-leadership",
+      "display_name": "Operations Leadership",
+      "description": "Owns accountable human operations leadership for MFI."
+    },
+    {
+      "id": "technology-leadership",
+      "display_name": "Technology Leadership",
+      "description": "Owns accountable human technology leadership for MFI."
+    }
+  ],
+  "seats": [
+    {
+      "id": "enterprise-orchestration-seat",
+      "role_id": "enterprise-orchestration",
+      "seat_type": "VACANT"
+    },
+    {
+      "id": "quality-assurance-seat",
+      "role_id": "quality-assurance",
+      "seat_type": "VACANT"
+    },
+    {
+      "id": "infrastructure-leadership-seat",
+      "role_id": "infrastructure-leadership",
+      "seat_type": "VACANT"
+    },
+    {
+      "id": "technology-gaming-entertainment-leadership-seat",
+      "role_id": "technology-gaming-entertainment-leadership",
+      "seat_type": "VACANT"
+    },
+    {
+      "id": "investments-leadership-seat",
+      "role_id": "investments-leadership",
+      "seat_type": "VACANT"
+    },
+    {
+      "id": "incubation-leadership-seat",
+      "role_id": "incubation-leadership",
+      "seat_type": "VACANT"
+    },
+    {
+      "id": "business-development-leadership-seat",
+      "role_id": "business-development-leadership",
+      "seat_type": "VACANT"
+    },
+    {
+      "id": "government-business-leadership-seat",
+      "role_id": "government-business-leadership",
+      "seat_type": "VACANT"
+    },
+    {
+      "id": "private-sector-leadership-seat",
+      "role_id": "private-sector-leadership",
+      "seat_type": "VACANT"
+    },
+    {
+      "id": "finance-leadership-seat",
+      "role_id": "finance-leadership",
+      "seat_type": "VACANT"
+    },
+    {
+      "id": "operations-leadership-seat",
+      "role_id": "operations-leadership",
+      "seat_type": "VACANT"
+    },
+    {
+      "id": "technology-leadership-seat",
+      "role_id": "technology-leadership",
+      "seat_type": "VACANT"
+    }
+  ],
+  "agents": [
+    {
+      "id": "mfi-orchestrator",
+      "display_name": "MFI Orchestrator",
+      "purpose": "Routes governed tasks and coordinates registered agents.",
+      "status": "PLANNED",
+      "version": "0.1.0",
+      "owner_type": "ROLE",
+      "owner_id": "enterprise-orchestration"
+    },
+    {
+      "id": "mfi-qa-auditor",
+      "display_name": "MFI QA Auditor",
+      "purpose": "Reviews outputs, evidence, policy compliance, and audit completeness.",
+      "status": "PLANNED",
+      "version": "0.1.0",
+      "owner_type": "ROLE",
+      "owner_id": "quality-assurance"
+    },
+    {
+      "id": "mfi-infrastructure-lead",
+      "display_name": "MFI Infrastructure Lead",
+      "purpose": "Supports Infrastructure & Supply Chain planning and coordination.",
+      "status": "PLANNED",
+      "version": "0.1.0",
+      "owner_type": "ROLE",
+      "owner_id": "infrastructure-leadership"
+    },
+    {
+      "id": "mfi-tech-entertainment-lead",
+      "display_name": "MFI Technology and Entertainment Lead",
+      "purpose": "Supports technology, gaming, and entertainment planning and coordination.",
+      "status": "PLANNED",
+      "version": "0.1.0",
+      "owner_type": "ROLE",
+      "owner_id": "technology-gaming-entertainment-leadership"
+    },
+    {
+      "id": "mfi-investments-lead",
+      "display_name": "MFI Investments Lead",
+      "purpose": "Supports investment research and governed opportunity analysis.",
+      "status": "PLANNED",
+      "version": "0.1.0",
+      "owner_type": "ROLE",
+      "owner_id": "investments-leadership"
+    },
+    {
+      "id": "mfi-incubation-lead",
+      "display_name": "MFI Incubation Lead",
+      "purpose": "Supports validation and development of new ventures.",
+      "status": "PLANNED",
+      "version": "0.1.0",
+      "owner_type": "ROLE",
+      "owner_id": "incubation-leadership"
+    },
+    {
+      "id": "mfi-business-development-lead",
+      "display_name": "MFI Business Development Lead",
+      "purpose": "Coordinates pipeline development across pillars and market channels.",
+      "status": "PLANNED",
+      "version": "0.1.0",
+      "owner_type": "ROLE",
+      "owner_id": "business-development-leadership"
+    },
+    {
+      "id": "mfi-government-business-lead",
+      "display_name": "MFI Government Business Lead",
+      "purpose": "Coordinates government-market opportunities across MFI pillars.",
+      "status": "PLANNED",
+      "version": "0.1.0",
+      "owner_type": "ROLE",
+      "owner_id": "government-business-leadership"
+    },
+    {
+      "id": "mfi-private-sector-lead",
+      "display_name": "MFI Private-Sector Lead",
+      "purpose": "Coordinates commercial opportunities across MFI pillars.",
+      "status": "PLANNED",
+      "version": "0.1.0",
+      "owner_type": "ROLE",
+      "owner_id": "private-sector-leadership"
+    },
+    {
+      "id": "mfi-cfo-copilot",
+      "display_name": "MFI CFO Copilot",
+      "purpose": "Provides governed finance analysis and draft recommendations to human finance leadership.",
+      "status": "PLANNED",
+      "version": "0.1.0",
+      "owner_type": "ROLE",
+      "owner_id": "finance-leadership"
+    },
+    {
+      "id": "mfi-coo-copilot",
+      "display_name": "MFI COO Copilot",
+      "purpose": "Provides governed operations analysis and coordination support to human operations leadership.",
+      "status": "PLANNED",
+      "version": "0.1.0",
+      "owner_type": "ROLE",
+      "owner_id": "operations-leadership"
+    },
+    {
+      "id": "mfi-cto-copilot",
+      "display_name": "MFI CTO Copilot",
+      "purpose": "Provides governed technology analysis and architecture support to human technology leadership.",
+      "status": "PLANNED",
+      "version": "0.1.0",
+      "owner_type": "ROLE",
+      "owner_id": "technology-leadership"
+    }
+  ],
+  "authority_grants": []
+}
