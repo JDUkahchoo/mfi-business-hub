@@ -1,0 +1,52 @@
+# MFI Agent Registry
+
+## Purpose
+
+This registry defines canonical agent identities and planned rollout. It is the identity source of truth; runtime configuration, prompts, and OpenCode definitions reference these IDs rather than creating competing names.
+
+## Status legend
+
+- `PLANNED`: approved direction; no agent implementation exists.
+- `DRAFT`: definition or prompt is being prepared.
+- `TESTING`: implementation exists but is not authorized for production work.
+- `ACTIVE`: approved for its documented production scope.
+- `SUSPENDED`: temporarily unable to accept work.
+- `RETIRED`: permanently inactive; history retained.
+
+All agents below are currently `PLANNED`. Empty package and prompt directories are scaffolds, not implementations.
+
+## Cohort 1 — orchestration, assurance, and pillar leadership
+
+| Canonical ID | Function | Accountable area | Status |
+|---|---|---|---|
+| `mfi-orchestrator` | Routes governed tasks and coordinates agents | Enterprise operations | `PLANNED` |
+| `mfi-qa-auditor` | Reviews outputs, evidence, policy compliance, and audit completeness | Quality assurance | `PLANNED` |
+| `mfi-infrastructure-lead` | Supports Infrastructure & Supply Chain planning and coordination | Infrastructure & Supply Chain | `PLANNED` |
+| `mfi-tech-entertainment-lead` | Supports technology, gaming, and entertainment work | Technology / Gaming / Entertainment | `PLANNED` |
+| `mfi-investments-lead` | Supports investment research and governed opportunity analysis | Investments | `PLANNED` |
+| `mfi-incubation-lead` | Supports validation and development of new ventures | Incubation | `PLANNED` |
+
+## Cross-company revenue and executive copilots
+
+| Canonical ID | Function | Accountable area | Status |
+|---|---|---|---|
+| `mfi-business-development-lead` | Coordinates pipeline development across pillars and channels | Business development | `PLANNED` |
+| `mfi-government-business-lead` | Coordinates government-market opportunities across pillars | Government business | `PLANNED` |
+| `mfi-private-sector-lead` | Coordinates commercial opportunities across pillars | Private-sector business | `PLANNED` |
+| `mfi-cfo-copilot` | Provides governed finance analysis and draft recommendations | Human finance leadership | `PLANNED` |
+| `mfi-coo-copilot` | Provides governed operating analysis and coordination support | Human operations leadership | `PLANNED` |
+| `mfi-cto-copilot` | Provides governed technology analysis and architecture support | Human technology leadership | `PLANNED` |
+
+## Specialist expansion
+
+Finance, operations, technology, legal/risk, HR, customer success, government, private-sector, and other specialist agents are added only when they have an accountable owner, non-overlapping purpose, authority definition, prompt, tests, and activation approval under the [Agent Standard](AGENT_STANDARD.md).
+
+## Registry rules
+
+- Canonical IDs are stable and lowercase with hyphens.
+- One ID represents one governed agent identity across prompts, configuration, logs, and assistant adapters.
+- Model names do not appear in canonical IDs.
+- A directory, prompt, or OpenCode definition does not make an agent active.
+- Status changes require recorded review and, for `ACTIVE`, accountable human approval.
+- Retired IDs are not reused for different purposes.
+

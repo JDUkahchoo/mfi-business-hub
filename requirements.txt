@@ -1,0 +1,3 @@
+# Preserve existing hub dependencies here when migrating.
+# No framework is required for the repository foundation.
+pytest>=8.0
