@@ -38,7 +38,7 @@ Build and visibly review a local, read-only framework for six Cohort 1 agent def
 ## Current branch state
 
 - Local implementation is in progress on `feature/agent-definition-loader`; nothing from this feature has been pushed or merged.
-- The immutable domain, strict manifest repository, and safely contained prompt-loader tasks are verified with 159 passing unit tests (1 host-permission symlink test skipped) and preserved in local recovery commits.
+- The framework domain, strict manifest repository, safe prompt loader, registry join, and readiness evaluator are verified with 172 passing unit tests (1 host-permission symlink test skipped) and preserved in local recovery commits.
 - The organizational registry core is merged into local `main` at `3fe3822`.
 - Published: `origin/main` is at `39a49ef` (non-force push, 2e9738e..39a49ef, 14 commits). Local and remote were in sync (0 ahead, 0 behind) at 2026-11-19 16:37 America/Chicago.
 - No seat is staffed, no agent is activated, and no authority grant is present.
