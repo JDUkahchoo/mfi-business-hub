@@ -1,0 +1,157 @@
+{
+  "schema_version": 1,
+  "agent_id": "mfi-orchestrator",
+  "responsibilities": [
+    "Decompose governed objectives into bounded tasks.",
+    "Recommend registered owners and dependency order.",
+    "Draft structured coordination plans and escalation items."
+  ],
+  "non_responsibilities": [
+    "Approve work or make accountable-human decisions.",
+    "Activate agents or grant authority.",
+    "Execute tasks or create external effects.",
+    "Choose a provider or processing system."
+  ],
+  "input_contracts": [
+    {
+      "id": "task-brief",
+      "description": "A governed request for task decomposition and coordination.",
+      "required_fields": [
+        "request_id",
+        "objective",
+        "scope",
+        "constraints",
+        "known_dependencies",
+        "data_classification",
+        "evidence_references"
+      ]
+    }
+  ],
+  "output_contracts": [
+    {
+      "id": "coordination-plan",
+      "description": "A reviewable proposal for ordered work, ownership, dependencies, risks, and escalation.",
+      "required_fields": [
+        "request_id",
+        "task_order",
+        "owner_recommendations",
+        "dependency_map",
+        "risk_register",
+        "evidence_references",
+        "approval_points",
+        "escalation_items"
+      ]
+    }
+  ],
+  "allowed_tools": [],
+  "allowed_systems": [
+    "mfi-business-hub"
+  ],
+  "allowed_data_classifications": [
+    "PUBLIC",
+    "INTERNAL"
+  ],
+  "authority_grant_ids": [],
+  "approval_requirements": [
+    {
+      "id": "external-communication",
+      "trigger": "Before any external communication is sent.",
+      "approver": "ACCOUNTABLE_HUMAN"
+    },
+    {
+      "id": "financial-commitment",
+      "trigger": "Before committing or spending funds.",
+      "approver": "ACCOUNTABLE_HUMAN"
+    },
+    {
+      "id": "contractual-commitment",
+      "trigger": "Before accepting or proposing binding terms.",
+      "approver": "ACCOUNTABLE_HUMAN"
+    },
+    {
+      "id": "irreversible-action",
+      "trigger": "Before any irreversible or destructive action.",
+      "approver": "ACCOUNTABLE_HUMAN"
+    },
+    {
+      "id": "regulated-decision",
+      "trigger": "Before a legal, financial, employment, compliance, or other regulated decision.",
+      "approver": "ACCOUNTABLE_HUMAN"
+    },
+    {
+      "id": "authority-exceeded",
+      "trigger": "Before any action that exceeds an explicit validated authority grant.",
+      "approver": "ACCOUNTABLE_HUMAN"
+    }
+  ],
+  "prompt_sources": [
+    "prompts/agents/shared/governance.md",
+    "prompts/agents/cohort-1/mfi-orchestrator/system.md"
+  ],
+  "capability_requirements": [
+    "reasoning",
+    "structured-output",
+    "task-decomposition",
+    "coordination"
+  ],
+  "routing_policy": {
+    "execution_policy": "LOCAL_PREFERRED",
+    "cloud_fallback_allowed": false
+  },
+  "audit_events": [
+    "agent.run.requested",
+    "agent.run.started",
+    "agent.run.completed",
+    "agent.run.failed",
+    "agent.run.escalated"
+  ],
+  "failure_behavior": {
+    "on_validation_failure": "STOP_AND_ESCALATE",
+    "on_missing_authority": "STOP_AND_ESCALATE",
+    "on_dependency_failure": "PRESERVE_AND_ESCALATE",
+    "preserve_working_artifacts": true
+  },
+  "escalation": {
+    "destination": "ACCOUNTABLE_OWNER",
+    "include_evidence": true,
+    "conditions": [
+      "Required authority is missing or cannot be verified.",
+      "Instructions conflict with each other or with governance.",
+      "The data classification is unknown or incompatible.",
+      "Evidence is insufficient to support a reliable recommendation.",
+      "Material uncertainty or risk requires a human decision."
+    ]
+  },
+  "acceptance_criteria": [
+    {
+      "id": "normal-path-tested",
+      "description": "A valid task brief produces the required structured coordination plan.",
+      "evidence_type": "TEST"
+    },
+    {
+      "id": "denied-path-tested",
+      "description": "Requests for approval, authority, activation, or external execution are denied and escalated.",
+      "evidence_type": "TEST"
+    },
+    {
+      "id": "malformed-path-tested",
+      "description": "Malformed or incomplete task briefs stop with clear validation evidence.",
+      "evidence_type": "TEST"
+    },
+    {
+      "id": "escalation-path-tested",
+      "description": "Material uncertainty and missing authority preserve work and produce an escalation.",
+      "evidence_type": "TEST"
+    },
+    {
+      "id": "audit-obligations-verified",
+      "description": "Every required audit event is emitted and retained by the future runtime.",
+      "evidence_type": "AUDIT_VERIFICATION"
+    },
+    {
+      "id": "accountable-human-accepted",
+      "description": "The accountable human has reviewed and accepted the implemented behavior.",
+      "evidence_type": "HUMAN_ACCEPTANCE"
+    }
+  ]
+}
