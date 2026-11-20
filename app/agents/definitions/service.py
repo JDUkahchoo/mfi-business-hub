@@ -7,6 +7,7 @@ from .models import GovernedAgentDefinition
 from .policy import COHORT_1_AGENT_IDS
 from .prompt_loader import PromptLoader, compose_prompt
 from .repository import AgentManifestRepository
+from .validation import validate_manifest
 
 
 class AgentDefinitionService:
@@ -45,6 +46,14 @@ class AgentDefinitionService:
         for agent_id in sorted({item for item in manifest_ids if manifest_ids.count(item) > 1}):
             findings.append(
                 DefinitionFinding("manifests", f"duplicate manifest {agent_id!r}")
+            )
+
+        for manifest in manifests:
+            findings.extend(
+                DefinitionFinding(
+                    f"{manifest.agent_id}.{finding.path}", finding.message
+                )
+                for finding in validate_manifest(manifest)
             )
 
         grants_by_id = {grant.id: grant for grant in registry.authority_grants}

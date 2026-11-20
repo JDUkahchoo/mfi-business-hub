@@ -17,7 +17,17 @@ class PromptLoader:
         findings: list[DefinitionFinding] = []
         candidates: list[tuple[str, Path]] = []
         seen: set[str] = set()
-        prompt_root = (self._repo_root / "prompts").resolve()
+        repo_root = self._repo_root.resolve()
+        prompt_root = (repo_root / "prompts").resolve()
+        if not prompt_root.is_relative_to(repo_root):
+            raise DefinitionValidationError(
+                (
+                    DefinitionFinding(
+                        "prompts",
+                        "resolved prompt root is outside the resolved repository root",
+                    ),
+                )
+            )
 
         for index, raw_path in enumerate(paths):
             source_path = f"prompt_sources[{index}]"
@@ -43,20 +53,22 @@ class PromptLoader:
                 findings.append(DefinitionFinding(source_path, "must be inside prompts/"))
                 continue
 
-            candidate = self._repo_root.joinpath(*logical.parts)
+            candidate = repo_root.joinpath(*logical.parts)
             resolved = candidate.resolve()
-            if not resolved.is_relative_to(prompt_root):
+            if not resolved.is_relative_to(repo_root) or not resolved.is_relative_to(
+                prompt_root
+            ):
                 findings.append(
                     DefinitionFinding(source_path, "resolves outside the prompts directory")
                 )
                 continue
-            if not candidate.exists():
+            if not resolved.exists():
                 findings.append(DefinitionFinding(source_path, "file does not exist"))
                 continue
-            if not candidate.is_file():
+            if not resolved.is_file():
                 findings.append(DefinitionFinding(source_path, "must reference a file"))
                 continue
-            candidates.append((raw_path, candidate))
+            candidates.append((raw_path, resolved))
 
         if findings:
             raise DefinitionValidationError(findings)
@@ -75,30 +87,6 @@ class PromptLoader:
                 findings.append(DefinitionFinding(logical_path, f"cannot read file: {exc}"))
                 continue
 
-            if not text.strip():
-                findings.append(DefinitionFinding(logical_path, "prompt must not be blank"))
-            if logical_path.startswith("prompts/agents/cohort-1/"):
-                lines = text.splitlines()
-                for heading in REQUIRED_PROMPT_HEADINGS:
-                    count = lines.count(heading)
-                    if count != 1:
-                        findings.append(
-                            DefinitionFinding(
-                                logical_path,
-                                f"heading {heading!r} must appear exactly once (found {count})",
-                            )
-                        )
-
-            normalized = re.sub(r"[^a-z0-9]", "", text.casefold())
-            for token in sorted(PROVIDER_MODEL_DENYLIST):
-                if token in normalized:
-                    findings.append(
-                        DefinitionFinding(
-                            logical_path,
-                            f"contains prohibited provider/model token {token!r}",
-                        )
-                    )
-
             sources.append(
                 LoadedPromptSource(
                     path=logical_path,
@@ -107,9 +95,46 @@ class PromptLoader:
                 )
             )
 
+        findings.extend(validate_loaded_prompt_sources(tuple(sources)))
         if findings:
             raise DefinitionValidationError(findings)
         return tuple(sources)
+
+
+def validate_loaded_prompt_sources(
+    sources: tuple[LoadedPromptSource, ...],
+) -> tuple[DefinitionFinding, ...]:
+    findings: list[DefinitionFinding] = []
+    for source in sources:
+        if not source.text.strip():
+            findings.append(DefinitionFinding(source.path, "prompt must not be blank"))
+        expected_digest = hashlib.sha256(source.text.encode("utf-8")).hexdigest()
+        if source.sha256_digest != expected_digest:
+            findings.append(
+                DefinitionFinding(source.path, "SHA-256 digest does not match prompt text")
+            )
+        if source.path.startswith("prompts/agents/cohort-1/"):
+            lines = source.text.splitlines()
+            for heading in REQUIRED_PROMPT_HEADINGS:
+                count = lines.count(heading)
+                if count != 1:
+                    findings.append(
+                        DefinitionFinding(
+                            source.path,
+                            f"heading {heading!r} must appear exactly once (found {count})",
+                        )
+                    )
+
+        normalized = re.sub(r"[^a-z0-9]", "", source.text.casefold())
+        for token in sorted(PROVIDER_MODEL_DENYLIST):
+            if token in normalized:
+                findings.append(
+                    DefinitionFinding(
+                        source.path,
+                        f"contains prohibited provider/model token {token!r}",
+                    )
+                )
+    return tuple(sorted(findings, key=lambda item: (item.path, item.message)))
 
 
 def compose_prompt(sources: tuple[LoadedPromptSource, ...]) -> str:

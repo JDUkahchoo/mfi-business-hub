@@ -19,13 +19,17 @@ def _default_repo_root() -> Path:
 
 
 def _parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Inspect governed MFI agent definitions.")
+    parser = argparse.ArgumentParser(
+        description="Inspect governed MFI agent definitions.", allow_abbrev=False
+    )
     parser.add_argument("--repo-root", type=Path, default=_default_repo_root())
     subparsers = parser.add_subparsers(dest="command", required=True)
     subparsers.add_parser("validate", help="Validate all Cohort 1 definitions.")
     subparsers.add_parser("summary", help="Show lifecycle and readiness summary.")
     subparsers.add_parser("readiness", help="Show aggregate readiness counts.")
-    show = subparsers.add_parser("show", help="Show one joined definition.")
+    show = subparsers.add_parser(
+        "show", help="Show one joined definition.", allow_abbrev=False
+    )
     show.add_argument("agent_id")
     show.add_argument("--with-prompt", action="store_true")
     return parser

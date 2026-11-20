@@ -60,6 +60,18 @@ def test_parses_complete_manifest(valid_manifest_data: dict[str, object]) -> Non
             "manifest.approval_requirements[0].approver",
         ),
         (
+            lambda data: data["approval_requirements"][0].update(approver=""),
+            "manifest.approval_requirements[0].approver",
+        ),
+        (
+            lambda data: data["allowed_data_classifications"].append(""),
+            "manifest.allowed_data_classifications[2]",
+        ),
+        (
+            lambda data: data["acceptance_criteria"][0].update(evidence_type=""),
+            "manifest.acceptance_criteria[0].evidence_type",
+        ),
+        (
             lambda data: data["input_contracts"][0].update(required_fields=[1]),
             "manifest.input_contracts[0].required_fields[0]",
         ),
@@ -236,3 +248,25 @@ def test_repository_accumulates_errors_across_files(
     assert any(path.startswith("a.json") for path in paths)
     assert any(path.startswith("mfi-orchestrator.json") for path in paths)
     assert paths == tuple(sorted(paths))
+
+
+def test_duplicate_id_diagnostic_retains_successful_source_filenames_after_bad_file(
+    tmp_path: Path, valid_manifest_data: dict[str, object]
+) -> None:
+    (tmp_path / "a-invalid.json").write_text("{bad", encoding="utf-8")
+    _write_manifest(tmp_path, "copy.json", valid_manifest_data)
+    _write_manifest(tmp_path, "mfi-orchestrator.json", valid_manifest_data)
+
+    with pytest.raises(DefinitionValidationError) as exc_info:
+        JsonAgentManifestRepository(
+            tmp_path, frozenset({"mfi-orchestrator"})
+        ).load_all()
+
+    duplicate = next(
+        finding
+        for finding in exc_info.value.findings
+        if "duplicate agent ID" in finding.message
+    )
+    assert "copy.json" in duplicate.message
+    assert "mfi-orchestrator.json" in duplicate.message
+    assert "a-invalid.json" not in duplicate.message

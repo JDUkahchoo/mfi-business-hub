@@ -83,6 +83,33 @@ def test_show_hides_prompt_by_default_and_reveals_only_on_request(
     assert "Human decisions and established MFI governance" in revealed.out
 
 
+def test_show_rejects_abbreviated_prompt_reveal_flag_without_disclosure(
+    tmp_path: Path,
+) -> None:
+    environment = os.environ.copy()
+    environment["PYTHONPATH"] = str(REPO_ROOT)
+
+    completed = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "app.agents.definitions.cli",
+            "show",
+            "mfi-orchestrator",
+            "--with",
+        ],
+        cwd=tmp_path,
+        env=environment,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+
+    assert completed.returncode == 2
+    assert "Human decisions and established MFI governance" not in completed.stdout
+    assert "BEGIN PROMPT SOURCE" not in completed.stdout
+
+
 def _copy_definition_sources(destination: Path) -> None:
     (destination / "config/organization").mkdir(parents=True)
     (destination / "config/agents").mkdir(parents=True)

@@ -17,7 +17,7 @@ Accept a pillar work brief containing the request identifier, opportunity scope,
 
 ## Outputs
 
-Produce a pillar analysis containing scenarios, assumptions, diligence gaps, risk register, evidence references, recommended next steps, approval points, and escalation items. Label the output as research and draft analysis, not individualized advice or an approved transaction.
+Produce a pillar analysis using these exact structured fields: `request_id`, `options`, `assumptions`, `dependency_map`, `risk_register`, `evidence_references`, `recommended_next_steps`, `approval_points`, and `escalation_items`. Use options for scenarios and record diligence gaps within assumptions, risks, dependencies, or escalation items as appropriate. Label the output as research and draft analysis, not individualized advice or an approved transaction.
 
 ## Boundaries
 

@@ -134,6 +134,31 @@ def test_rejects_resolved_path_escape_even_when_lexically_inside_prompts(
     assert "resolves outside" in str(exc_info.value)
 
 
+def test_rejects_prompt_root_that_resolves_outside_repository(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    target = _write_prompt(tmp_path, SHARED_PATH, "Governance\n")
+    repository = tmp_path.resolve()
+    prompt_root = repository / "prompts"
+    outside_root = repository.parent / "redirected-prompts"
+    outside_target = outside_root / "agents/shared/governance.md"
+    original_resolve = Path.resolve
+
+    def redirected_resolve(path: Path, *args, **kwargs) -> Path:
+        if path == prompt_root:
+            return outside_root
+        if path == target:
+            return outside_target
+        return original_resolve(path, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "resolve", redirected_resolve)
+
+    with pytest.raises(DefinitionValidationError) as exc_info:
+        PromptLoader(repository).load((SHARED_PATH,))
+
+    assert "prompt root" in str(exc_info.value)
+
+
 def test_rejects_symlink_escape_when_supported(tmp_path: Path) -> None:
     outside = tmp_path / "outside.md"
     outside.write_text("Outside prompt", encoding="utf-8")

@@ -170,3 +170,33 @@ def test_rejects_missing_or_wrong_subject_authority_grants(
 
     assert "missing-grant" in str(exc_info.value)
     assert "another-agent" in str(exc_info.value)
+
+
+def test_join_boundary_rejects_policy_invalid_manifest_from_injected_repository(
+    tmp_path: Path, valid_manifest_data: dict[str, object]
+) -> None:
+    _write_prompts(tmp_path)
+    grant = AuthorityGrant(
+        id="grant-read",
+        subject_type=GrantSubjectType.AGENT,
+        subject_id="mfi-orchestrator",
+        level=AuthorityLevel.READ,
+        scope="internal plans",
+    )
+    manifest = replace(
+        parse_manifest_data(valid_manifest_data, "manifest"),
+        allowed_tools=("send-email",),
+        authority_grant_ids=("grant-read",),
+    )
+
+    with pytest.raises(DefinitionValidationError) as exc_info:
+        AgentDefinitionService(
+            InMemoryOrganizationRepository(_registry(grants=(grant,))),
+            InMemoryManifestRepository((manifest,)),
+            PromptLoader(tmp_path),
+            expected_agent_ids=frozenset({"mfi-orchestrator"}),
+        ).load_all()
+
+    text = str(exc_info.value)
+    assert "allowed_tools" in text
+    assert "authority_grant_ids" in text

@@ -74,6 +74,8 @@ def parse_manifest_data(data: object, source: str) -> AgentManifest:
     def enum_value(value: object, path: str, enum_type: Callable[[str], _EnumT]) -> _EnumT | None:
         raw = string_value(value, path)
         if not raw:
+            if type(value) is str:
+                finding(path, "must not be empty")
             return None
         try:
             return enum_type(raw)
@@ -211,7 +213,7 @@ class JsonAgentManifestRepository:
             )
 
         findings: list[DefinitionFinding] = []
-        manifests: list[AgentManifest] = []
+        parsed_manifests: list[tuple[str, AgentManifest]] = []
         try:
             entries = sorted(self._directory.iterdir(), key=lambda item: item.name)
         except OSError as exc:
@@ -278,11 +280,11 @@ class JsonAgentManifestRepository:
                 findings.append(
                     DefinitionFinding(f"{path.name}.{semantic.path}", semantic.message)
                 )
-            manifests.append(manifest)
+            parsed_manifests.append((path.name, manifest))
 
         by_id: dict[str, list[str]] = {}
-        for manifest, path in zip(manifests, [p for p in json_files if p.name], strict=False):
-            by_id.setdefault(manifest.agent_id, []).append(path.name)
+        for source_name, manifest in parsed_manifests:
+            by_id.setdefault(manifest.agent_id, []).append(source_name)
         for agent_id, sources in sorted(by_id.items()):
             if len(sources) > 1:
                 findings.append(
@@ -292,7 +294,7 @@ class JsonAgentManifestRepository:
                     )
                 )
 
-        actual_ids = frozenset(manifest.agent_id for manifest in manifests)
+        actual_ids = frozenset(manifest.agent_id for _, manifest in parsed_manifests)
         for agent_id in sorted(self._expected_agent_ids - actual_ids):
             findings.append(
                 DefinitionFinding("agent_id", f"missing expected agent ID {agent_id!r}")
@@ -304,7 +306,12 @@ class JsonAgentManifestRepository:
 
         if findings:
             raise DefinitionValidationError(findings)
-        return tuple(sorted(manifests, key=lambda item: item.agent_id))
+        return tuple(
+            sorted(
+                (manifest for _, manifest in parsed_manifests),
+                key=lambda item: item.agent_id,
+            )
+        )
 
 
 class _DuplicateMemberError(ValueError):

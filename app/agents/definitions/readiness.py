@@ -13,6 +13,7 @@ from .models import (
     ReadinessReport,
     RuntimeTestCategory,
 )
+from .prompt_loader import compose_prompt, validate_loaded_prompt_sources
 from .validation import validate_manifest
 
 
@@ -31,7 +32,9 @@ def _definition_is_complete(definition: GovernedAgentDefinition) -> bool:
         return False
     if tuple(source.path for source in definition.prompt_sources) != definition.manifest.prompt_sources:
         return False
-    if not definition.composed_prompt.strip():
+    if validate_loaded_prompt_sources(definition.prompt_sources):
+        return False
+    if definition.composed_prompt != compose_prompt(definition.prompt_sources):
         return False
     if tuple(grant.id for grant in definition.resolved_grants) != definition.manifest.authority_grant_ids:
         return False
@@ -42,6 +45,16 @@ def _validate_evidence(
     definition: GovernedAgentDefinition, evidence: ReadinessEvidence
 ) -> None:
     findings: list[DefinitionFinding] = []
+    if type(evidence.runtime_implementation_verified) is not bool:
+        findings.append(
+            DefinitionFinding(
+                "runtime_implementation_verified", "must be a boolean"
+            )
+        )
+    if type(evidence.accountable_human_accepted) is not bool:
+        findings.append(
+            DefinitionFinding("accountable_human_accepted", "must be a boolean")
+        )
     for category in evidence.runtime_test_categories:
         if not isinstance(category, RuntimeTestCategory):
             findings.append(

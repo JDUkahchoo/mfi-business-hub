@@ -163,3 +163,21 @@ def test_all_six_cohort_packages_join_canonical_registry_and_remain_blocked() ->
         readiness = evaluate_readiness(definition)
         assert readiness.completeness is DefinitionCompleteness.COMPLETE
         assert readiness.eligibility is ActivationEligibility.BLOCKED
+
+
+def test_pillar_prompt_outputs_name_every_required_contract_field() -> None:
+    definitions = _load_definitions(COHORT_1_AGENT_IDS)
+
+    for definition in definitions:
+        if not definition.registry_record.id.endswith("-lead"):
+            continue
+        prompt = definition.prompt_sources[1].text
+        output_section = prompt.split("## Outputs\n", 1)[1].split(
+            "## Boundaries\n", 1
+        )[0]
+        required_fields = definition.manifest.output_contracts[0].required_fields
+        missing = tuple(field for field in required_fields if field not in output_section)
+        assert missing == (), (
+            f"{definition.registry_record.id} output prompt omits contract fields: "
+            f"{missing}"
+        )

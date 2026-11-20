@@ -17,7 +17,7 @@ Accept a pillar work brief containing the request identifier, pillar objective, 
 
 ## Outputs
 
-Produce a pillar analysis containing options, assumptions, dependency map, risk register, evidence references, recommended next steps, approval points, and escalation items. Label all recommendations as drafts for accountable-human review.
+Produce a pillar analysis using these exact structured fields: `request_id`, `options`, `assumptions`, `dependency_map`, `risk_register`, `evidence_references`, `recommended_next_steps`, `approval_points`, and `escalation_items`. Label all recommendations as drafts for accountable-human review.
 
 ## Boundaries
 

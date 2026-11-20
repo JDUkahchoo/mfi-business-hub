@@ -17,7 +17,7 @@ Accept a pillar work brief containing the request identifier, venture hypothesis
 
 ## Outputs
 
-Produce a pillar analysis containing hypotheses, experiment plan, success measures, dependency map, risk register, evidence references, recommended next steps, approval points, and escalation items. Label all advancement recommendations as drafts for accountable-human review.
+Produce a pillar analysis using these exact structured fields: `request_id`, `options`, `assumptions`, `dependency_map`, `risk_register`, `evidence_references`, `recommended_next_steps`, `approval_points`, and `escalation_items`. Use options for experiment paths and record hypotheses and success measures within assumptions and recommended next steps. Label all advancement recommendations as drafts for accountable-human review.
 
 ## Boundaries
 

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import replace
+import hashlib
 
 import pytest
 
@@ -15,14 +16,37 @@ from app.agents.definitions.models import (
     RuntimeTestCategory,
 )
 from app.agents.definitions.readiness import evaluate_all, evaluate_readiness
+from app.agents.definitions.prompt_loader import compose_prompt
 from app.organization import AgentDefinition, AgentStatus, OwnerType
 
 
 def _definition(valid_manifest_data: dict[str, object]) -> GovernedAgentDefinition:
     manifest = parse_manifest_data(valid_manifest_data, "manifest")
+    prompt_texts = (
+        "Human decisions take precedence.\n",
+        """## Purpose
+Coordinate work.
+## Responsibilities
+Propose task order.
+## Inputs
+Governed requests.
+## Outputs
+Coordination plans.
+## Boundaries
+No execution authority.
+## Escalation
+Escalate uncertainty.
+## Prohibited actions
+Do not approve work.
+""",
+    )
     sources = tuple(
-        LoadedPromptSource(path, "validated", "digest")
-        for path in manifest.prompt_sources
+        LoadedPromptSource(
+            path,
+            text,
+            hashlib.sha256(text.encode("utf-8")).hexdigest(),
+        )
+        for path, text in zip(manifest.prompt_sources, prompt_texts, strict=True)
     )
     return GovernedAgentDefinition(
         registry_record=AgentDefinition(
@@ -36,7 +60,7 @@ def _definition(valid_manifest_data: dict[str, object]) -> GovernedAgentDefiniti
         ),
         manifest=manifest,
         prompt_sources=sources,
-        composed_prompt="validated",
+        composed_prompt=compose_prompt(sources),
         resolved_grants=(),
     )
 
@@ -104,6 +128,25 @@ def test_rejects_unknown_readiness_evidence_references(
         evaluate_readiness(definition, ReadinessEvidence(**kwargs))
 
 
+def test_rejects_non_boolean_readiness_evidence_flags(
+    valid_manifest_data: dict[str, object],
+) -> None:
+    definition = _definition(valid_manifest_data)
+
+    with pytest.raises(DefinitionValidationError) as exc_info:
+        evaluate_readiness(
+            definition,
+            ReadinessEvidence(
+                runtime_implementation_verified="false",  # type: ignore[arg-type]
+                accountable_human_accepted="false",  # type: ignore[arg-type]
+            ),
+        )
+
+    text = str(exc_info.value)
+    assert "runtime_implementation_verified" in text
+    assert "accountable_human_accepted" in text
+
+
 def test_evaluate_all_rejects_unknown_agent_evidence_and_sorts_reports(
     valid_manifest_data: dict[str, object],
 ) -> None:
@@ -129,3 +172,27 @@ def test_definition_completeness_failure_precedes_evidence_gaps(
     assert report.completeness is DefinitionCompleteness.INCOMPLETE
     assert report.blocker_codes[0] == "definition-invalid"
     assert report.eligibility is ActivationEligibility.BLOCKED
+
+
+@pytest.mark.parametrize("corruption", ["blank-text", "bad-digest", "bad-composition"])
+def test_prompt_integrity_is_required_for_definition_completeness(
+    valid_manifest_data: dict[str, object], corruption: str
+) -> None:
+    definition = _definition(valid_manifest_data)
+    if corruption == "blank-text":
+        first = replace(definition.prompt_sources[0], text="")
+        invalid = replace(
+            definition, prompt_sources=(first, definition.prompt_sources[1])
+        )
+    elif corruption == "bad-digest":
+        first = replace(definition.prompt_sources[0], sha256_digest="not-a-digest")
+        invalid = replace(
+            definition, prompt_sources=(first, definition.prompt_sources[1])
+        )
+    else:
+        invalid = replace(definition, composed_prompt="unrelated prompt text")
+
+    report = evaluate_readiness(invalid)
+
+    assert report.completeness is DefinitionCompleteness.INCOMPLETE
+    assert report.blocker_codes[0] == "definition-invalid"
