@@ -8,16 +8,18 @@ Governance rules and lifecycle semantics remain authoritative in this document a
 
 ## Status legend
 
-- `PLANNED`: approved direction; no agent implementation exists.
+- `PLANNED`: approved identity and direction; definition assets may exist, but no activated runtime authority exists.
 - `DRAFT`: definition or prompt is being prepared.
 - `TESTING`: implementation exists but is not authorized for production work.
 - `ACTIVE`: approved for its documented production scope.
 - `SUSPENDED`: temporarily unable to accept work.
 - `RETIRED`: permanently inactive; history retained.
 
-All agents below are currently `PLANNED`. Empty package and prompt directories are scaffolds, not implementations.
+All agents below are currently `PLANNED`. The six Cohort 1 identities have complete manifest and prompt assets plus local readiness reporting; this does not create a runtime, grant authority, or permit activation. The remaining six identities have registry records only.
 
 ## Cohort 1 — orchestration, assurance, and pillar leadership
+
+Definition status for all six: `COMPLETE`. Activation eligibility for all six: `BLOCKED`. Each definition has zero tools and zero authority grants. Inspect them with the [local definition commands](../operations/AGENT_DEFINITION_INSPECTION.md).
 
 | Canonical ID | Function | Accountable area | Status |
 |---|---|---|---|

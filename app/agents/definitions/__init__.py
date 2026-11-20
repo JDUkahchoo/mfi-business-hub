@@ -27,6 +27,11 @@ from .models import (
     RuntimeTestCategory,
 )
 from .repository import AgentManifestRepository
+from .json_repository import JsonAgentManifestRepository, parse_manifest_data
+from .prompt_loader import PromptLoader, compose_prompt
+from .readiness import evaluate_all, evaluate_readiness
+from .service import AgentDefinitionService
+from .validation import validate_manifest
 
 __all__ = [
     "AcceptanceCriterion",
@@ -34,6 +39,7 @@ __all__ = [
     "AgentDefinitionError",
     "AgentManifest",
     "AgentManifestRepository",
+    "AgentDefinitionService",
     "ApprovalRequirement",
     "ApproverType",
     "ContractSpec",
@@ -49,9 +55,16 @@ __all__ = [
     "FailureAction",
     "FailureBehavior",
     "GovernedAgentDefinition",
+    "JsonAgentManifestRepository",
     "LoadedPromptSource",
     "ReadinessEvidence",
     "ReadinessReport",
     "RoutingPolicy",
     "RuntimeTestCategory",
+    "PromptLoader",
+    "compose_prompt",
+    "evaluate_all",
+    "evaluate_readiness",
+    "parse_manifest_data",
+    "validate_manifest",
 ]

@@ -4,14 +4,14 @@
 
 **Milestone 0 — Repository stabilization and existing Hub validation**
 
-- Maintain the shared repository structure and source-of-truth documents.
-- Locate and assess any existing orchestrator, prompt, and JSON-store assets before migration.
-- Establish version control and a repeatable development environment.
+- **Complete.** Maintain the shared repository structure and source-of-truth documents.
+- **Complete.** Locate and assess existing assets before migration.
+- **Complete.** Establish version control and a repeatable development environment.
 
 **Milestone 1 — Organizational model and agent framework**
 
-- Represent pillars, cross-pillar functions, people, roles, and seat types.
-- Implement registry-backed agent definitions and prompt/configuration loading.
+- **Complete.** Represent pillars, cross-pillar functions, roles, vacant seats, governed agent identities, and explicit authority grants.
+- **Complete.** Implement strict registry-backed definition, prompt, validation, inspection, and readiness loading for the six Cohort 1 identities.
 
 **Milestone 2 — Authority, approvals, audit, and model gateway**
 
@@ -21,8 +21,8 @@
 
 **Milestone 3 — Cohort 1 agents**
 
-- Orchestrator and QA Auditor.
-- Four Pillar Lead agents.
+- Implement and test runtime behavior for the Orchestrator and QA Auditor definitions.
+- Implement and test runtime behavior for the four Pillar Lead definitions.
 
 **Milestone 4 — Cross-company agents**
 
@@ -40,6 +40,8 @@
 
 ## Current position
 
-Milestone 0. The scaffold and documentation baseline exist. Existing Hub code, prompts, and JSON data have not been located or migrated, and no runtime components are implemented.
+Milestone 1 definition framework complete locally. The canonical organization registry and six Cohort 1 manifest/prompt packages are implemented and inspectable. Every Cohort 1 definition is complete while its registry lifecycle remains `PLANNED` and activation remains blocked.
+
+Milestone 2 enforcement and gateway work is pending. No agent runtime, model routing, tool execution, approval engine, audit persistence, Control Plane, or Compute Plane worker is implemented. The six remaining registered agent identities do not yet have definition packages.
 
 Architecture direction is defined in the [architecture documents](architecture/ARCHITECTURE.md); agent rollout status is defined in the [Agent Registry](governance/AGENT_REGISTRY.md).

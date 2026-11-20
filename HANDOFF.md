@@ -4,8 +4,8 @@
 - **Repository:** `https://github.com/JDUkahchoo/mfi-business-hub.git`
 - **Branch:** `feature/agent-definition-loader`
 - **Worktree:** `D:\Joshua\Claude\projects\APPS\mfi-business-hub\mfi-business-hub\.worktrees\agent-definition-loader`
-- **Latest merge:** `3fe3822` — merge: add organizational registry core
-- **Current owner:** Codex (local feature implementation; do not push or merge yet)
+- **Base commit:** `de669c3` — local `main` and `origin/main` were aligned when the feature branch started
+- **Current owner:** Codex (local verification and independent review; do not push or merge)
 - **Current milestone:** Milestone 1 — Cohort 1 agent-definition framework
 
 ## Current objective
@@ -14,52 +14,51 @@ Build and visibly review a local, read-only framework for six Cohort 1 agent def
 
 ## Implementation commits
 
-- `9ab395a` — design organizational registry core
-- `4f14bc8` — plan organizational registry core
-- `615f6be` — add organizational registry domain model
-- `36c036f` — validate organizational governance rules
-- `d5ff56a` — load registry from strict JSON
-- `392ab73` — seed canonical MFI organization registry
-- `107f712` — add registry validation CLI and feature handoff
-- `ef64806` — remediate independent review findings
-- `3fe3822` — merge the verified feature into local `main`
+- `b269641` — design Cohort 1 agent-definition framework
+- `c1cc022` — plan Cohort 1 agent-definition framework
+- `17b87d0` — add immutable agent-definition domain model
+- `4d13aba` — add strict manifest validation and repository
+- `af2c623` — add contained prompt loading and composition
+- `b29c619` — join canonical definitions and report readiness
+- `270e7dd` — define the representative MFI Orchestrator package
+- `5f16b3e` — define all six Cohort 1 packages
+- Branch `HEAD` — add local inspection commands, status documentation, and this handoff
 
 ## Completed feature work
 
-- Added immutable Python domain models and read-only indexes under `app/organization/`.
-- Added deterministic validation for references, seat composition, canonical IDs, duplicates, versions, provider-independent agent identity, scopes, and AI authority limits.
-- Added strict, atomic UTF-8 JSON loading with concise file, encoding, syntax, shape, enum, and semantic errors.
-- Added `config/organization/registry.json` with 12 roles, 12 vacant seats, 12 `PLANNED` role-owned agents, and zero authority grants.
-- Clarified that governance Markdown defines policy while JSON is the structured record source.
-- Added read-only `validate` and `summary` commands through `python -m app.organization.cli`.
-- Added unit coverage for domain, validation, JSON loading, canonical seed data, CLI output, error behavior, read-only behavior, and execution outside the repository directory.
-- Remediated all six Important independent-review findings with regression coverage.
+- Added immutable definition, prompt, joined-definition, evidence, and readiness records under `app/agents/definitions/`.
+- Added strict, atomic JSON manifest loading with unknown-field, type, duplicate-member, duplicate-ID, filename-parity, policy, and provider-independence checks.
+- Added contained Markdown prompt loading with lexical and resolved-path escape prevention, UTF-8 validation, exact section requirements, source fingerprints, and provenance-aware composition.
+- Joined manifests to canonical identity, lifecycle, version, purpose, ownership, and grants from `config/organization/registry.json` without duplicating those fields.
+- Added complete manifests and readable prompts for the Orchestrator, QA Auditor, and four Pillar Leads.
+- Added typed readiness reporting that separates definition completeness from activation eligibility and never changes lifecycle state.
+- Added read-only `validate`, `summary`, `show`, and `readiness` commands plus an operator guide.
+- Corrected roadmap, architecture, and registry status language without claiming an agent runtime exists.
 
 ## Current branch state
 
-- Local implementation is in progress on `feature/agent-definition-loader`; nothing from this feature has been pushed or merged.
-- The framework and all six Cohort 1 definition packages are verified with 175 passing unit tests (1 host-permission symlink test skipped) and preserved in local recovery commits.
+- Local implementation is on `feature/agent-definition-loader`; nothing from this feature has been pushed or merged.
+- The framework, six packages, and inspection commands are verified with 185 passing unit tests (1 host-permission symlink test skipped and covered by a platform-neutral resolved-containment test).
 - All six load as definition `COMPLETE`, lifecycle `PLANNED`, activation `BLOCKED`, with zero tools and zero authority grants; zero are activation-eligible.
-- The organizational registry core is merged into local `main` at `3fe3822`.
-- Published: `origin/main` is at `39a49ef` (non-force push, 2e9738e..39a49ef, 14 commits). Local and remote were in sync (0 ahead, 0 behind) at 2026-11-19 16:37 America/Chicago.
+- The feature branch started from `de669c3`; local `main` and `origin/main` were aligned at that commit.
 - No seat is staffed, no agent is activated, and no authority grant is present.
 - The Control Plane, authentication, database, live agent execution, routing, approvals, and audit persistence remain future work.
-- Pre-push verification by Claude: worktree clean, 108 unit tests passed, `validate` and `summary` passed, no tracked `.env`.
 
 ## Verification evidence
 
-- Post-merge `python -m pytest tests/unit -q` — 108 passed.
-- `python -m app.organization.cli validate` — `Registry valid.`
-- `python -m app.organization.cli summary` — `Registry valid: 12 roles, 12 seats, 12 agents, 0 authority grants.`
-- Test evidence confirms both CLI commands leave the canonical JSON bytes and modification time unchanged.
-- Independent whole-branch review completed; no Critical findings and all six Important findings were remediated.
-- Post-merge `git diff --check` and clean-worktree verification passed.
+- `python -m pytest tests/unit -q` — 185 passed, 1 skipped for Windows symlink permission.
+- `python -m app.agents.definitions.cli validate` — `6 Cohort 1 definitions valid; 12 prompt sources loaded; 0 authority grants resolved.`
+- `python -m app.agents.definitions.cli summary` — six deterministic `COMPLETE  PLANNED  BLOCKED` rows.
+- `python -m app.agents.definitions.cli readiness` — `6 definition-complete; 0 activation-eligible; 6 blocked.`
+- `python -m app.agents.definitions.cli show mfi-orchestrator` — canonical metadata, contracts, prompt paths, fingerprints, and blockers; no prompt body by default.
+- Tests confirm all commands are read-only and work outside the repository directory.
+- `git diff --check` and `git diff --check main...HEAD` — clean before the Task 7 commit.
 
 ## Next action
 
-Claude: complete. Verified clean worktree and 108 passing tests, pushed `main` without force, and recorded the remote commit above.
+Codex: commit the verified local inspection milestone, repeat complete verification on the committed branch, then request an independent whole-branch review. Resolve any Critical or Important finding with a failing regression test before code changes.
 
-Codex: continue the approved seven-task local implementation plan. Show Joshua the representative Orchestrator manifest, shared governance prompt, role prompt, and readiness output before any push or merge decision.
+Joshua: after clean independent review and the final local report, choose whether to keep the branch, merge locally, or later push. No publish or merge is authorized yet.
 
 ## Known constraints
 

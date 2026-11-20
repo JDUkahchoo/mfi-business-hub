@@ -33,7 +33,7 @@ Approved external providers such as Claude, OpenAI, and Grok provide optional re
 ## Core domains
 
 - `app/core/`: orchestration, configuration, routing, permissions, approvals, notifications, and audit behavior.
-- `app/agents/`: agent runtime implementations grouped by business function.
+- `app/agents/`: governed agent-definition loading and future runtime implementations grouped by business function.
 - `app/organization/`: people, roles, departments, pillars, and seat assignments.
 - `app/business/`: leads, opportunities, proposals, projects, contracts, tasks, decisions, and risks.
 - `app/knowledge/`: documents, repositories, retrieval, and knowledge-store boundaries.
@@ -76,5 +76,7 @@ Routing considers the job's data classification, execution policy, required capa
 
 ## Implementation status
 
-The repository currently contains a package and documentation scaffold. The Control Plane, Compute Plane, Model Gateway, permissions engine, approval engine, audit system, worker protocol, and business agents remain planned work. See the [Roadmap](../ROADMAP.md).
+The repository implements a strict, read-only organization registry and a provider-independent definition framework for six Cohort 1 agents. The framework joins canonical registry identity to validated manifests and contained prompt sources, then reports definition completeness separately from activation eligibility. All six definitions are complete, remain lifecycle `PLANNED`, have no tools or authority grants, and are blocked from activation.
+
+This is configuration and inspection infrastructure, not an agent runtime. The Control Plane, Compute Plane, Model Gateway, permissions enforcement, approval engine, audit persistence, worker protocol, model calls, and business-agent execution remain planned work. See the [Roadmap](../ROADMAP.md) and [inspection guide](../operations/AGENT_DEFINITION_INSPECTION.md).
 
