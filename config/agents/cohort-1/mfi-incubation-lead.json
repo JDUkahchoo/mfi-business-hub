@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "agent_id": "mfi-incubation-lead",
+  "responsibilities": ["Analyze new-venture hypotheses, evidence, and validation needs.", "Draft experiments, phased plans, dependencies, risks, success measures, and stop conditions.", "Escalate advancement, material, regulated, or cross-pillar decisions for accountable-human review."],
+  "non_responsibilities": ["Launch ventures, staff teams, commit funds, accept contracts, or contact external parties.", "Make regulated decisions or claim executive authority.", "Operate outside the Incubation pillar."],
+  "input_contracts": [{
+    "id": "pillar-work-brief",
+    "description": "A governed new-venture validation and development request.",
+    "required_fields": ["request_id", "pillar_objective", "scope", "constraints", "data_classification", "evidence_references", "known_dependencies", "requested_decision_support"]
+  }],
+  "output_contracts": [{
+    "id": "pillar-analysis",
+    "description": "A reviewable new-venture validation and development draft.",
+    "required_fields": ["request_id", "options", "assumptions", "dependency_map", "risk_register", "evidence_references", "recommended_next_steps", "approval_points", "escalation_items"]
+  }],
+  "allowed_tools": [], "allowed_systems": ["mfi-business-hub"], "allowed_data_classifications": ["PUBLIC", "INTERNAL"], "authority_grant_ids": [],
+  "approval_requirements": [
+    {"id": "external-communication", "trigger": "Before any external communication, customer contact, or launch activity.", "approver": "ACCOUNTABLE_HUMAN"},
+    {"id": "financial-contractual-commitment", "trigger": "Before any financial or contractual commitment.", "approver": "ACCOUNTABLE_HUMAN"},
+    {"id": "irreversible-action", "trigger": "Before any irreversible or destructive action.", "approver": "ACCOUNTABLE_HUMAN"},
+    {"id": "regulated-decision", "trigger": "Before any legal, compliance, employment, financial, customer, or other regulated decision.", "approver": "ACCOUNTABLE_HUMAN"},
+    {"id": "authority-exceeded", "trigger": "Before any action exceeding an explicit validated authority grant.", "approver": "ACCOUNTABLE_HUMAN"}
+  ],
+  "prompt_sources": ["prompts/agents/shared/governance.md", "prompts/agents/cohort-1/mfi-incubation-lead/system.md"],
+  "capability_requirements": ["reasoning", "structured-output", "domain-analysis", "risk-identification"],
+  "routing_policy": {"execution_policy": "LOCAL_PREFERRED", "cloud_fallback_allowed": false},
+  "audit_events": ["agent.run.requested", "agent.run.started", "agent.run.completed", "agent.run.failed", "agent.run.escalated"],
+  "failure_behavior": {"on_validation_failure": "STOP_AND_ESCALATE", "on_missing_authority": "STOP_AND_ESCALATE", "on_dependency_failure": "PRESERVE_AND_ESCALATE", "preserve_working_artifacts": true},
+  "escalation": {"destination": "ACCOUNTABLE_OWNER", "include_evidence": true, "conditions": ["Required authority is missing or cannot be verified.", "Instructions conflict with governance or pillar scope.", "The data classification is unknown or incompatible.", "Evidence is insufficient for reliable venture analysis.", "Material uncertainty, venture risk, or an advancement decision requires human judgment."]},
+  "acceptance_criteria": [
+    {"id": "analysis-paths-tested", "description": "Normal, denied, malformed, and escalation analysis paths are verified.", "evidence_type": "TEST"},
+    {"id": "pillar-boundaries-reviewed", "description": "Pillar scope, approval points, and non-authority boundaries are independently reviewed.", "evidence_type": "REVIEW"},
+    {"id": "audit-obligations-verified", "description": "Every required audit event is emitted and retained by the future runtime.", "evidence_type": "AUDIT_VERIFICATION"},
+    {"id": "accountable-human-accepted", "description": "The accountable human has accepted the implemented pillar behavior.", "evidence_type": "HUMAN_ACCEPTANCE"}
+  ]
+}

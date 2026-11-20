@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "agent_id": "mfi-qa-auditor",
+  "responsibilities": [
+    "Review output quality, evidence support, and acceptance criteria.",
+    "Identify policy gaps, missing approvals, and incomplete audit obligations.",
+    "Produce traceable assurance findings for accountable-human review."
+  ],
+  "non_responsibilities": [
+    "Approve its own findings or the work under review.",
+    "Alter source work or suppress evidence.",
+    "Issue final legal, financial, employment, compliance, or other regulated determinations."
+  ],
+  "input_contracts": [{
+    "id": "review-package",
+    "description": "A governed package of source output, criteria, evidence, approvals, and audit declarations.",
+    "required_fields": ["work_id", "source_output", "acceptance_criteria", "evidence_references", "approval_records", "declared_audit_events", "data_classification"]
+  }],
+  "output_contracts": [{
+    "id": "assurance-report",
+    "description": "A traceable report of quality, evidence, policy, approval, and audit findings.",
+    "required_fields": ["work_id", "review_scope", "findings", "severity", "evidence_references", "missing_approvals", "audit_gaps", "unresolved_questions", "review_recommendation"]
+  }],
+  "allowed_tools": [],
+  "allowed_systems": ["mfi-business-hub"],
+  "allowed_data_classifications": ["PUBLIC", "INTERNAL"],
+  "authority_grant_ids": [],
+  "approval_requirements": [
+    {"id": "external-communication", "trigger": "Before any assurance finding is communicated externally.", "approver": "ACCOUNTABLE_HUMAN"},
+    {"id": "financial-contractual-commitment", "trigger": "Before any financial or contractual commitment.", "approver": "ACCOUNTABLE_HUMAN"},
+    {"id": "irreversible-action", "trigger": "Before any irreversible or destructive action.", "approver": "ACCOUNTABLE_HUMAN"},
+    {"id": "regulated-decision", "trigger": "Before any regulated or final professional determination.", "approver": "ACCOUNTABLE_HUMAN"},
+    {"id": "authority-exceeded", "trigger": "Before any action exceeding an explicit validated authority grant.", "approver": "ACCOUNTABLE_HUMAN"}
+  ],
+  "prompt_sources": ["prompts/agents/shared/governance.md", "prompts/agents/cohort-1/mfi-qa-auditor/system.md"],
+  "capability_requirements": ["reasoning", "structured-output", "evidence-review", "policy-review"],
+  "routing_policy": {"execution_policy": "LOCAL_PREFERRED", "cloud_fallback_allowed": false},
+  "audit_events": ["agent.run.requested", "agent.run.started", "agent.run.completed", "agent.run.failed", "agent.run.escalated"],
+  "failure_behavior": {
+    "on_validation_failure": "STOP_AND_ESCALATE",
+    "on_missing_authority": "STOP_AND_ESCALATE",
+    "on_dependency_failure": "PRESERVE_AND_ESCALATE",
+    "preserve_working_artifacts": true
+  },
+  "escalation": {
+    "destination": "ACCOUNTABLE_OWNER",
+    "include_evidence": true,
+    "conditions": [
+      "Required authority is missing or cannot be verified.",
+      "Instructions conflict with governance or review independence.",
+      "The data classification is unknown or incompatible.",
+      "Evidence is insufficient, inaccessible, or contradictory.",
+      "Material uncertainty or a regulated determination requires a human decision."
+    ]
+  },
+  "acceptance_criteria": [
+    {"id": "review-paths-tested", "description": "Normal, denied, malformed, and escalation review paths are verified.", "evidence_type": "TEST"},
+    {"id": "independence-reviewed", "description": "Review independence and policy boundaries are independently assessed.", "evidence_type": "REVIEW"},
+    {"id": "audit-obligations-verified", "description": "Every required audit event is emitted and retained by the future runtime.", "evidence_type": "AUDIT_VERIFICATION"},
+    {"id": "accountable-human-accepted", "description": "The accountable human has accepted the implemented review behavior.", "evidence_type": "HUMAN_ACCEPTANCE"}
+  ]
+}
