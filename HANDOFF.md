@@ -1,16 +1,16 @@
 # MFI Business Hub Handoff
 
-- **Updated:** 2026-11-20 America/Chicago
+- **Updated:** 2026-11-21 America/Chicago
 - **Repository:** `https://github.com/JDUkahchoo/mfi-business-hub.git`
-- **Branch:** `main`
-- **Worktree:** `D:\Joshua\Claude\projects\APPS\mfi-business-hub\mfi-business-hub`
+- **Branch:** `feature/local-review-dashboard`
+- **Worktree:** `D:\Joshua\Claude\projects\APPS\mfi-business-hub\mfi-business-hub\.worktrees\local-review-dashboard`
 - **Latest local integration:** `1339182` — agent-definition framework integrated and verified on Windows
-- **Current owner:** Joshua (local integration complete; publishing remains a separate decision)
-- **Current milestone:** Milestone 1 — Cohort 1 agent-definition framework
+- **Current owner:** Codex (local dashboard design; implementation awaits Joshua's approval)
+- **Current milestone:** Local review dashboard over the completed Cohort 1 definition framework
 
 ## Current objective
 
-Build and visibly review a local, read-only framework for six Cohort 1 agent definitions. Keep every agent `PLANNED`, deny tools and authority by default, and do not add runtime execution or provider bindings.
+Build a polished, read-only browser dashboard locally so Joshua can review the six Cohort 1 definitions before any deployment work. Preserve `PLANNED`/`BLOCKED` lifecycle safety, prompt privacy by default, and the absence of tools, grants, runtime execution, or provider bindings.
 
 ## Implementation commits
 
@@ -40,6 +40,10 @@ Build and visibly review a local, read-only framework for six Cohort 1 agent def
 
 ## Current branch state
 
+- Local dashboard design is documented at `docs/superpowers/specs/2026-11-21-local-review-dashboard-design.md`; implementation has not started and awaits Joshua's approval.
+- The dashboard approach is standard-library Python plus static local browser assets, loopback-only and dependency-free.
+- Builder review found one concurrent-edit ambiguity; the design now fails closed when repeated prompt fingerprints disagree within a snapshot.
+- Baseline verification on the isolated branch: 197 tests passed, 1 Windows symlink-permission test skipped with platform-neutral coverage passing.
 - The verified feature is merged into local `main` at `27add58`; nothing from this feature has been pushed to GitHub.
 - The framework, six packages, inspection commands, and review remediations are verified with 197 passing unit tests (1 host-permission symlink test skipped and covered by platform-neutral resolved-containment tests).
 - All six load as definition `COMPLETE`, lifecycle `PLANNED`, activation `BLOCKED`, with zero tools and zero authority grants; zero are activation-eligible.
@@ -62,9 +66,9 @@ Build and visibly review a local, read-only framework for six Cohort 1 agent def
 
 ## Next action
 
-Codex: complete. The reviewed feature is integrated into local `main`, merged-result verification is green, and the feature worktree and branch are removed.
+Codex: after Joshua approves the local dashboard design, write the implementation plan and build it in this isolated worktree with visible desktop and mobile checkpoints.
 
-Joshua: inspect the local reports and live experience, then decide when the updated local `main` should be pushed. No publish is authorized yet.
+Joshua: review and approve or correct the dashboard design. Deployment and GitHub publishing remain separate later decisions.
 
 ## Known constraints
 
