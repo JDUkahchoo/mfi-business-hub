@@ -4,7 +4,7 @@
 - **Repository:** `https://github.com/JDUkahchoo/mfi-business-hub.git`
 - **Branch:** `main`
 - **Worktree:** `D:\Joshua\Claude\projects\APPS\mfi-business-hub\mfi-business-hub`
-- **Latest local integration:** `27add58` — agent-definition framework fast-forwarded into local `main`
+- **Latest local integration:** `1339182` — agent-definition framework integrated and verified on Windows
 - **Current owner:** Joshua (local integration complete; publishing remains a separate decision)
 - **Current milestone:** Milestone 1 — Cohort 1 agent-definition framework
 
@@ -24,6 +24,8 @@ Build and visibly review a local, read-only framework for six Cohort 1 agent def
 - `5f16b3e` — define all six Cohort 1 packages
 - `aafe2a7` — add local inspection commands, status documentation, and handoff
 - `27add58` — remediate all Important independent-review findings
+- `7100f94` — record local agent-framework integration
+- `1339182` — make prompt contract-parity verification line-ending neutral on Windows
 
 ## Completed feature work
 
@@ -45,6 +47,7 @@ Build and visibly review a local, read-only framework for six Cohort 1 agent def
 - No seat is staffed, no agent is activated, and no authority grant is present.
 - The Control Plane, authentication, database, live agent execution, routing, approvals, and audit persistence remain future work.
 - Independent whole-branch review found no Critical issues. All eight Important findings were reproduced with failing tests and remediated in one fix pass.
+- Merged-result verification exposed and fixed one CRLF-only test assumption; the feature worktree and merged feature branch were then removed.
 
 ## Verification evidence
 
@@ -59,7 +62,7 @@ Build and visibly review a local, read-only framework for six Cohort 1 agent def
 
 ## Next action
 
-Codex: complete. The reviewed feature is integrated into local `main`; feature-worktree cleanup follows successful merged-result verification.
+Codex: complete. The reviewed feature is integrated into local `main`, merged-result verification is green, and the feature worktree and branch are removed.
 
 Joshua: inspect the local reports and live experience, then decide when the updated local `main` should be pushed. No publish is authorized yet.
 
