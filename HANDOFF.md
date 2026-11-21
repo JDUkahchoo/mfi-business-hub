@@ -2,10 +2,10 @@
 
 - **Updated:** 2026-11-20 America/Chicago
 - **Repository:** `https://github.com/JDUkahchoo/mfi-business-hub.git`
-- **Branch:** `feature/agent-definition-loader`
-- **Worktree:** `D:\Joshua\Claude\projects\APPS\mfi-business-hub\mfi-business-hub\.worktrees\agent-definition-loader`
-- **Base commit:** `de669c3` — local `main` and `origin/main` were aligned when the feature branch started
-- **Current owner:** Codex (final local verification complete; do not push or merge)
+- **Branch:** `main`
+- **Worktree:** `D:\Joshua\Claude\projects\APPS\mfi-business-hub\mfi-business-hub`
+- **Latest local integration:** `27add58` — agent-definition framework fast-forwarded into local `main`
+- **Current owner:** Joshua (local integration complete; publishing remains a separate decision)
 - **Current milestone:** Milestone 1 — Cohort 1 agent-definition framework
 
 ## Current objective
@@ -23,7 +23,7 @@ Build and visibly review a local, read-only framework for six Cohort 1 agent def
 - `270e7dd` — define the representative MFI Orchestrator package
 - `5f16b3e` — define all six Cohort 1 packages
 - `aafe2a7` — add local inspection commands, status documentation, and handoff
-- Branch `HEAD` — remediate all Important independent-review findings
+- `27add58` — remediate all Important independent-review findings
 
 ## Completed feature work
 
@@ -38,10 +38,10 @@ Build and visibly review a local, read-only framework for six Cohort 1 agent def
 
 ## Current branch state
 
-- Local implementation is on `feature/agent-definition-loader`; nothing from this feature has been pushed or merged.
+- The verified feature is merged into local `main` at `27add58`; nothing from this feature has been pushed to GitHub.
 - The framework, six packages, inspection commands, and review remediations are verified with 197 passing unit tests (1 host-permission symlink test skipped and covered by platform-neutral resolved-containment tests).
 - All six load as definition `COMPLETE`, lifecycle `PLANNED`, activation `BLOCKED`, with zero tools and zero authority grants; zero are activation-eligible.
-- The feature branch started from `de669c3`; local `main` and `origin/main` were aligned at that commit.
+- `origin/main` remains at `de669c3`; local `main` now contains the reviewed agent-definition commits.
 - No seat is staffed, no agent is activated, and no authority grant is present.
 - The Control Plane, authentication, database, live agent execution, routing, approvals, and audit persistence remain future work.
 - Independent whole-branch review found no Critical issues. All eight Important findings were reproduced with failing tests and remediated in one fix pass.
@@ -59,9 +59,9 @@ Build and visibly review a local, read-only framework for six Cohort 1 agent def
 
 ## Next action
 
-Codex: complete. The local branch is verified and independently reviewed with no unresolved Critical or Important findings.
+Codex: complete. The reviewed feature is integrated into local `main`; feature-worktree cleanup follows successful merged-result verification.
 
-Joshua: inspect the local reports and choose whether to keep the branch, merge it locally, or later push. No publish or merge is authorized yet.
+Joshua: inspect the local reports and live experience, then decide when the updated local `main` should be pushed. No publish is authorized yet.
 
 ## Known constraints
 
