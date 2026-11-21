@@ -171,7 +171,7 @@ def test_pillar_prompt_outputs_name_every_required_contract_field() -> None:
     for definition in definitions:
         if not definition.registry_record.id.endswith("-lead"):
             continue
-        prompt = definition.prompt_sources[1].text
+        prompt = definition.prompt_sources[1].text.replace("\r\n", "\n")
         output_section = prompt.split("## Outputs\n", 1)[1].split(
             "## Boundaries\n", 1
         )[0]
