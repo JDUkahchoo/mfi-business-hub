@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>MFI Business Hub — Local Agent Review</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="mobile-header">
+    <a class="brand compact" href="#overview" aria-label="MFI Hub overview"><span>MFI</span> Business Hub</a>
+  </header>
+  <div class="shell">
+    <nav class="rail" aria-label="Dashboard views">
+      <a class="brand" href="#overview"><span>MFI</span> Business Hub</a>
+      <p class="rail-kicker">Governed operations</p>
+      <div class="rail-links">
+        <a href="#overview" data-route="overview">Overview</a>
+        <a href="#agents" data-route="agents">Agents</a>
+        <a href="#readiness" data-route="readiness">Readiness</a>
+      </div>
+      <div class="local-mark"><strong>Local only</strong><span>Read-only review surface</span></div>
+    </nav>
+    <div class="workspace">
+      <header id="governance-ribbon" class="governance-ribbon" aria-label="Governance status">
+        <span class="ribbon-label">Governance state</span>
+        <div id="ribbon-values" class="ribbon-values"><span>Loading validated definitions…</span></div>
+      </header>
+      <main id="app" tabindex="-1">
+        <section id="loading-state" class="state-panel" aria-labelledby="loading-title">
+          <p class="eyebrow">Local review</p>
+          <h1 id="loading-title">Preparing the governed operating folio</h1>
+          <p>Validating the registry, manifests, readiness rules, and prompt fingerprints.</p>
+        </section>
+        <section id="fatal-error" class="state-panel error-panel" hidden>
+          <p class="eyebrow">Unable to load</p>
+          <h2>Dashboard validation stopped safely</h2>
+          <p id="fatal-error-message"></p>
+          <button id="retry-button" type="button">Retry validation</button>
+        </section>
+      </main>
+      <footer><span>MFI Business Hub</span><span>No agents are run by this interface.</span></footer>
+    </div>
+  </div>
+  <p id="status-live" class="sr-only" aria-live="polite"></p>
+  <dialog id="prompt-dialog" aria-labelledby="prompt-title">
+    <div class="dialog-head">
+      <div><p class="eyebrow">Prompt review</p><h2 id="prompt-title">Composed prompt</h2></div>
+      <button id="prompt-close" class="icon-button" type="button" aria-label="Close prompt viewer">×</button>
+    </div>
+    <p class="prompt-warning">Viewing this text does not run the agent or call a model.</p>
+    <div id="prompt-provenance" class="provenance"></div>
+    <pre id="prompt-text" tabindex="0"></pre>
+  </dialog>
+  <script src="/app.js" defer></script>
+</body>
+</html>
