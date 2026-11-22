@@ -5,12 +5,12 @@
 - **Branch:** `feature/local-review-dashboard`
 - **Worktree:** `D:\Joshua\Claude\projects\APPS\mfi-business-hub\mfi-business-hub\.worktrees\local-review-dashboard`
 - **Latest local integration:** `1339182` — agent-definition framework integrated and verified on Windows
-- **Current owner:** Codex (local dashboard design; implementation awaits Joshua's approval)
+- **Current owner:** Codex (local dashboard implementation complete; final branch review pending)
 - **Current milestone:** Local review dashboard over the completed Cohort 1 definition framework
 
 ## Current objective
 
-Build a polished, read-only browser dashboard locally so Joshua can review the six Cohort 1 definitions before any deployment work. Preserve `PLANNED`/`BLOCKED` lifecycle safety, prompt privacy by default, and the absence of tools, grants, runtime execution, or provider bindings.
+Complete and independently review the polished, read-only local browser dashboard before any merge, push, or deployment choice. Preserve `PLANNED`/`BLOCKED` lifecycle safety, prompt privacy by default, and the absence of tools, grants, runtime execution, or provider bindings.
 
 ## Implementation commits
 
@@ -26,6 +26,11 @@ Build a polished, read-only browser dashboard locally so Joshua can review the s
 - `27add58` — remediate all Important independent-review findings
 - `7100f94` — record local agent-framework integration
 - `1339182` — make prompt contract-parity verification line-ending neutral on Windows
+- `be5c7ff` — plan the local agent review dashboard
+- `99b5743` — add governed dashboard snapshot service
+- `07af4a7` — add loopback read-only HTTP server
+- `be502bb` — add local dashboard command
+- `98b5308` — add data-driven browser review interface
 
 ## Completed feature work
 
@@ -40,12 +45,14 @@ Build a polished, read-only browser dashboard locally so Joshua can review the s
 
 ## Current branch state
 
-- Local dashboard design is documented at `docs/superpowers/specs/2026-11-21-local-review-dashboard-design.md`; implementation has not started and awaits Joshua's approval.
-- The dashboard approach is standard-library Python plus static local browser assets, loopback-only and dependency-free.
-- Builder review found one concurrent-edit ambiguity; the design now fails closed when repeated prompt fingerprints disagree within a snapshot.
-- Baseline verification on the isolated branch: 197 tests passed, 1 Windows symlink-permission test skipped with platform-neutral coverage passing.
+- Local dashboard design and implementation plan are documented under `docs/superpowers/`.
+- The dashboard is standard-library Python plus static local browser assets, loopback-only, read-only, and dependency-free.
+- Browser views include Overview, Agents, Agent Detail, Readiness, and an explicit prompt viewer; prompt text is absent from default responses.
+- Repeated prompt paths with inconsistent fingerprints fail the request atomically with refresh guidance.
+- Desktop, agent-ledger, detail, and mobile-width screenshots were reviewed from the real local server.
+- Dashboard branch verification: 258 tests passed, 1 Windows symlink-permission test skipped with platform-neutral coverage passing.
 - The verified feature is merged into local `main` at `27add58`; nothing from this feature has been pushed to GitHub.
-- The framework, six packages, inspection commands, and review remediations are verified with 197 passing unit tests (1 host-permission symlink test skipped and covered by platform-neutral resolved-containment tests).
+- The framework, dashboard services/server/CLI/assets, inspection commands, and read-only acceptance proof are covered by 258 passing unit tests (1 host-permission symlink test skipped and covered by platform-neutral resolved-containment tests).
 - All six load as definition `COMPLETE`, lifecycle `PLANNED`, activation `BLOCKED`, with zero tools and zero authority grants; zero are activation-eligible.
 - `origin/main` remains at `de669c3`; local `main` now contains the reviewed agent-definition commits.
 - No seat is staffed, no agent is activated, and no authority grant is present.
@@ -55,7 +62,8 @@ Build a polished, read-only browser dashboard locally so Joshua can review the s
 
 ## Verification evidence
 
-- `python -m pytest tests/unit -q` — 197 passed, 1 skipped for Windows symlink permission.
+- `python -m pytest tests/unit -q` — 258 passed, 1 skipped for Windows symlink permission.
+- Read-only acceptance exercises all six detail and prompt routes plus health, dashboard, HEAD, 404, traversal, and mutation rejection while preserving source bytes and modification times.
 - `python -m app.agents.definitions.cli validate` — `6 Cohort 1 definitions valid; 12 prompt sources loaded; 0 authority grants resolved.`
 - `python -m app.agents.definitions.cli summary` — six deterministic `COMPLETE  PLANNED  BLOCKED` rows.
 - `python -m app.agents.definitions.cli readiness` — `6 definition-complete; 0 activation-eligible; 6 blocked.`
@@ -66,9 +74,9 @@ Build a polished, read-only browser dashboard locally so Joshua can review the s
 
 ## Next action
 
-Codex: after Joshua approves the local dashboard design, write the implementation plan and build it in this isolated worktree with visible desktop and mobile checkpoints.
+Codex: run the final whole-branch review, fix any Critical or Important findings with regression tests, and present the live local checkpoint.
 
-Joshua: review and approve or correct the dashboard design. Deployment and GitHub publishing remain separate later decisions.
+Joshua: review the real dashboard at the printed loopback URL. Merge, GitHub publishing, and deployment remain separate later decisions.
 
 ## Known constraints
 

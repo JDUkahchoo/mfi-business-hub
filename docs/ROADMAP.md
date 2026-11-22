@@ -12,6 +12,7 @@
 
 - **Complete.** Represent pillars, cross-pillar functions, roles, vacant seats, governed agent identities, and explicit authority grants.
 - **Complete.** Implement strict registry-backed definition, prompt, validation, inspection, and readiness loading for the six Cohort 1 identities.
+- **Complete locally.** Provide a read-only browser dashboard for reviewing those definitions and blockers before deployment decisions.
 
 **Milestone 2 — Authority, approvals, audit, and model gateway**
 
@@ -40,8 +41,8 @@
 
 ## Current position
 
-Milestone 1 definition framework complete locally. The canonical organization registry and six Cohort 1 manifest/prompt packages are implemented and inspectable. Every Cohort 1 definition is complete while its registry lifecycle remains `PLANNED` and activation remains blocked.
+Milestone 1 definition framework and local review dashboard are complete on the feature branch. The canonical organization registry and six Cohort 1 manifest/prompt packages are implemented and inspectable in the browser. Every Cohort 1 definition is complete while its registry lifecycle remains `PLANNED` and activation remains blocked.
 
-Milestone 2 enforcement and gateway work is pending. No agent runtime, model routing, tool execution, approval engine, audit persistence, Control Plane, or Compute Plane worker is implemented. The six remaining registered agent identities do not yet have definition packages.
+Milestone 2 enforcement and gateway work is pending. The local dashboard is not the hosted Control Plane. No agent runtime, model routing, tool execution, approval engine, audit persistence, authentication, database, deployed Control Plane, or Compute Plane worker is implemented. The six remaining registered agent identities do not yet have definition packages.
 
 Architecture direction is defined in the [architecture documents](architecture/ARCHITECTURE.md); agent rollout status is defined in the [Agent Registry](governance/AGENT_REGISTRY.md).

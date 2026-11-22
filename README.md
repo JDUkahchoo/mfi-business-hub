@@ -4,7 +4,9 @@ The **MFI Business Hub** is the shared foundation humans, Codex, Claude Code, an
 
 ## Current status
 
-This repository currently provides the package layout, architecture and governance documents, environment and secrets safeguards, and structural tests. It does **not** yet contain a runnable Hub, web Control Plane, local worker, model gateway, permissions engine, or implemented business agents.
+This repository now provides a validated registry-backed definition framework for six Cohort 1 agents and a runnable, read-only local browser dashboard for reviewing them. All six definitions are `COMPLETE`, their lifecycle remains `PLANNED`, and activation remains `BLOCKED`; no tools or authority grants are present.
+
+It does **not** contain the hosted Control Plane, authentication, a database, a local worker, model gateway, permissions or approval engines, audit persistence, deployment configuration, or an agent runtime.
 
 See the [Roadmap](docs/ROADMAP.md) for delivery order and the [documentation index](docs/README.md) for authoritative project references.
 
@@ -76,6 +78,14 @@ Run the current verification suite:
 python -m pytest tests/unit -v
 ```
 
+Run the local review dashboard:
+
+```powershell
+python -m app.local_dashboard.cli --open
+```
+
+See the [local dashboard operating guide](docs/operations/LOCAL_DASHBOARD.md) for its loopback-only and read-only boundaries.
+
 ## Implementation boundary
 
-The existing orchestrator, prompts, or JSON store referenced by earlier planning have not been located or migrated into this repository. When available, they must be assessed before migration. The current JSON knowledge-store direction remains valid until a deliberate database milestone.
+The current dashboard is a local review tool, not the production Control Plane. The JSON registry remains the version-controlled source for this milestone until a deliberate database migration. Deployment, authentication, persistent approvals/audits, model routing, worker connectivity, and agent execution require separate reviewed milestones.
