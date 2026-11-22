@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from enum import Enum
 
-from app.organization import AgentDefinition, AuthorityGrant
+from app.organization import AgentDefinition, AuthorityGrant, RoleDefinition
 
 
 class DataClassification(str, Enum):
@@ -136,6 +136,7 @@ class GovernedAgentDefinition:
     prompt_sources: tuple[LoadedPromptSource, ...]
     composed_prompt: str
     resolved_grants: tuple[AuthorityGrant, ...]
+    owner_role: RoleDefinition | None = None
 
 
 @dataclass(frozen=True, slots=True)

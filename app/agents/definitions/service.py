@@ -70,14 +70,18 @@ class AgentDefinitionService:
                 continue
 
             owner_valid = True
+            owner_role = None
             if canonical.owner_type is OwnerType.ROLE:
-                owner_valid = registry.get_role(canonical.owner_id) is not None
+                owner_role = registry.get_role(canonical.owner_id)
+                owner_valid = owner_role is not None
             elif canonical.owner_type is OwnerType.SEAT:
                 seat = registry.get_seat(canonical.owner_id)
                 owner_valid = seat is not None and seat.seat_type in (
                     SeatType.HUMAN,
                     SeatType.HYBRID,
                 )
+                if seat is not None:
+                    owner_role = registry.get_role(seat.role_id)
             if not owner_valid:
                 findings.append(
                     DefinitionFinding(
@@ -132,6 +136,7 @@ class AgentDefinitionService:
                     prompt_sources=prompt_sources,
                     composed_prompt=compose_prompt(prompt_sources),
                     resolved_grants=tuple(resolved_grants),
+                    owner_role=owner_role,
                 )
             )
 
