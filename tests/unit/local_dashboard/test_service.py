@@ -2,11 +2,17 @@ from __future__ import annotations
 
 from dataclasses import replace
 from datetime import datetime, timezone
+from pathlib import Path
+import shutil
 
 import pytest
 
 from app.agents.definitions.errors import DefinitionFinding, DefinitionValidationError
-from app.local_dashboard.service import InconsistentSnapshotError, LocalDashboardService, UnknownAgentError
+from app.agents.definitions.json_repository import JsonAgentManifestRepository
+from app.agents.definitions.prompt_loader import PromptLoader
+from app.agents.definitions.service import AgentDefinitionService
+from app.local_dashboard.service import InconsistentSnapshotError, LocalDashboardService, UnknownAgentError, governed_source_versions
+from app.organization import JsonOrganizationRepository
 
 
 ORDER = (
@@ -110,3 +116,34 @@ def test_prompt_request_loads_a_fresh_snapshot(definition_service) -> None:
     prompt = service.prompt("mfi-orchestrator")
     assert sequence.calls == 2
     assert prompt.composed_prompt.endswith("Fresh snapshot.")
+
+
+@pytest.mark.parametrize("source_kind", ["registry", "manifest", "agent_prompt"])
+def test_rejects_each_governed_source_class_changing_during_real_load(
+    tmp_path: Path, repo_root: Path, source_kind: str
+) -> None:
+    shutil.copytree(repo_root / "config", tmp_path / "config")
+    shutil.copytree(repo_root / "prompts", tmp_path / "prompts")
+    real = AgentDefinitionService(
+        JsonOrganizationRepository(tmp_path / "config/organization/registry.json"),
+        JsonAgentManifestRepository(tmp_path / "config/agents/cohort-1"),
+        PromptLoader(tmp_path),
+    )
+    targets = {
+        "registry": tmp_path / "config/organization/registry.json",
+        "manifest": tmp_path / "config/agents/cohort-1/mfi-orchestrator.json",
+        "agent_prompt": tmp_path / "prompts/agents/cohort-1/mfi-orchestrator/system.md",
+    }
+
+    class MutatingService:
+        def load_all(self):
+            result = real.load_all()
+            target = targets[source_kind]
+            target.write_bytes(target.read_bytes() + b" ")
+            return result
+
+    service = LocalDashboardService(
+        MutatingService(), source_versions=lambda: governed_source_versions(tmp_path)
+    )
+    with pytest.raises(InconsistentSnapshotError, match="governed sources changed"):
+        service.dashboard()

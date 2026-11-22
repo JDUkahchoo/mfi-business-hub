@@ -82,6 +82,13 @@ def make_handler(
 
         def _dispatch(self, include_body: bool) -> None:
             try:
+                if not self._authority_is_local():
+                    self._send_json(
+                        421,
+                        {"error": {"code": "invalid_authority", "message": "This dashboard accepts only its local loopback address."}},
+                        include_body,
+                    )
+                    return
                 raw_path = urlsplit(self.path).path
                 path = unquote(raw_path, errors="strict")
                 if path == "/api/dashboard":
@@ -123,6 +130,13 @@ def make_handler(
                     include_body,
                 )
 
+        def _authority_is_local(self) -> bool:
+            authority = self.headers.get("Host", "").casefold()
+            port = self.server.server_address[1]
+            return authority in {
+                "127.0.0.1", "localhost", f"127.0.0.1:{port}", f"localhost:{port}"
+            }
+
         def _not_found(self, include_body: bool, message: str) -> None:
             self._send_json(
                 404,
@@ -133,8 +147,11 @@ def make_handler(
         def _send_static(self, filename: str, content_type: str, include_body: bool) -> None:
             candidate = root / filename
             try:
-                body = candidate.read_bytes()
-            except (FileNotFoundError, IsADirectoryError):
+                resolved = candidate.resolve(strict=True)
+                if not resolved.is_relative_to(root) or not resolved.is_file():
+                    raise FileNotFoundError(filename)
+                body = resolved.read_bytes()
+            except (OSError, ValueError):
                 self._not_found(include_body, "static asset was not found")
                 return
             self._send(200, body, content_type, include_body)
@@ -185,6 +202,16 @@ def create_server(
     root = static_root.resolve()
     if not root.is_dir():
         raise ValueError("static asset root must be an existing directory")
+    for filename, _content_type in _STATIC_ROUTES.values():
+        candidate = root / filename
+        try:
+            resolved = candidate.resolve(strict=True)
+        except OSError as error:
+            raise ValueError(f"static asset is missing or unreadable: {filename}") from error
+        if not resolved.is_relative_to(root):
+            raise ValueError(f"static asset resolves outside the static root: {filename}")
+        if not resolved.is_file():
+            raise ValueError(f"static asset is not a regular file: {filename}")
     server = ThreadingHTTPServer(
         (validated_host, validated_port), make_handler(service, root)
     )

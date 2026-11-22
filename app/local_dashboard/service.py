@@ -4,6 +4,8 @@ from collections import defaultdict
 from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime, timezone
+import hashlib
+from pathlib import Path
 
 from app.agents.definitions.models import GovernedAgentDefinition, ReadinessReport
 from app.agents.definitions.readiness import evaluate_all
@@ -49,6 +51,25 @@ class InconsistentSnapshotError(ValueError):
     pass
 
 
+def governed_source_versions(repo_root: Path) -> tuple[tuple[str, str], ...]:
+    root = repo_root.resolve()
+    paths = [root / "config/organization/registry.json"]
+    paths.extend(sorted((root / "config/agents/cohort-1").glob("*.json")))
+    paths.extend(sorted((root / "prompts/agents").rglob("*.md")))
+    try:
+        return tuple(
+            (
+                path.relative_to(root).as_posix(),
+                hashlib.sha256(path.read_bytes()).hexdigest(),
+            )
+            for path in paths
+        )
+    except (OSError, ValueError) as error:
+        raise InconsistentSnapshotError(
+            "governed sources could not be versioned consistently; refresh to retry"
+        ) from error
+
+
 @dataclass(frozen=True, slots=True)
 class _LoadedSnapshot:
     definitions: tuple[GovernedAgentDefinition, ...]
@@ -61,12 +82,20 @@ class LocalDashboardService:
         self,
         definition_service: AgentDefinitionService,
         clock: Callable[[], datetime] | None = None,
+        source_versions: Callable[[], tuple[tuple[str, str], ...]] | None = None,
     ) -> None:
         self._definition_service = definition_service
         self._clock = clock or (lambda: datetime.now(timezone.utc))
+        self._source_versions = source_versions
 
     def _load(self) -> _LoadedSnapshot:
+        versions_before = self._source_versions() if self._source_versions else None
         definitions = self._definition_service.load_all()
+        versions_after = self._source_versions() if self._source_versions else None
+        if versions_before != versions_after:
+            raise InconsistentSnapshotError(
+                "governed sources changed during snapshot; refresh to retry"
+            )
         digests: dict[str, set[str]] = defaultdict(set)
         for definition in definitions:
             for source in definition.prompt_sources:

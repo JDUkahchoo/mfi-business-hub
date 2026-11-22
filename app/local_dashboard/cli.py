@@ -13,7 +13,7 @@ from app.agents.definitions.service import AgentDefinitionService
 from app.organization import JsonOrganizationRepository, RegistryError
 
 from .server import create_server, validate_host, validate_port
-from .service import InconsistentSnapshotError, LocalDashboardService
+from .service import InconsistentSnapshotError, LocalDashboardService, governed_source_versions
 
 
 def _default_repo_root() -> Path:
@@ -26,7 +26,8 @@ def _build_service(repo_root: Path) -> LocalDashboardService:
             JsonOrganizationRepository(repo_root / "config/organization/registry.json"),
             JsonAgentManifestRepository(repo_root / "config/agents/cohort-1"),
             PromptLoader(repo_root),
-        )
+        ),
+        source_versions=lambda: governed_source_versions(repo_root),
     )
 
 

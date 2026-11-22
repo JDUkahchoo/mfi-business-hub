@@ -41,9 +41,9 @@ def running_server(service, static_root: Path):
         thread.join(timeout=2)
 
 
-def request(port: int, method: str, path: str) -> tuple[int, dict[str, str], bytes]:
+def request(port: int, method: str, path: str, headers: dict[str, str] | None = None) -> tuple[int, dict[str, str], bytes]:
     connection = http.client.HTTPConnection("127.0.0.1", port, timeout=3)
-    connection.request(method, path)
+    connection.request(method, path, headers=headers or {})
     response = connection.getresponse()
     body = response.read()
     headers = {key.casefold(): value for key, value in response.getheaders()}
@@ -175,3 +175,36 @@ def test_maps_programming_errors_to_generic_500_and_logs_detail(static_root: Pat
     assert b"internal_error" in body
     assert b"private boom" not in body
     assert "private boom" in captured.err
+
+
+def test_rejects_non_loopback_http_authority(definition_service, static_root: Path) -> None:
+    with running_server(LocalDashboardService(definition_service), static_root) as port:
+        status, _, body = request(
+            port, "GET", "/api/dashboard", {"Host": f"attacker.example:{port}"}
+        )
+    assert status == 421
+    assert b"invalid_authority" in body
+    assert b'"agents"' not in body
+
+
+def test_server_startup_rejects_missing_or_escaping_allowlisted_asset(
+    definition_service, static_root: Path
+) -> None:
+    (static_root / "app.js").unlink()
+    with pytest.raises(ValueError, match="static asset"):
+        create_server(LocalDashboardService(definition_service), static_root, port=8764)
+
+
+def test_server_startup_rejects_allowlisted_symlink_escape(
+    definition_service, static_root: Path, tmp_path: Path
+) -> None:
+    outside = tmp_path / "outside.js"
+    outside.write_text("private", encoding="utf-8")
+    asset = static_root / "app.js"
+    asset.unlink()
+    try:
+        asset.symlink_to(outside)
+    except OSError as error:
+        pytest.skip(f"host does not permit symlink creation: {error}")
+    with pytest.raises(ValueError, match="outside the static root"):
+        create_server(LocalDashboardService(definition_service), static_root, port=8764)

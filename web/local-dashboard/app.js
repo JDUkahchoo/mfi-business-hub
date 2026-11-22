@@ -1,6 +1,6 @@
 "use strict";
 
-const state = { dashboard: null, detail: null, detailId: null, filter: "ALL", search: "", prompt: null, promptTrigger: null };
+const state = { dashboard: null, detail: null, detailId: null, filter: "ALL", search: "", prompt: null, promptTrigger: null, navigationVersion: 0 };
 const app = document.querySelector("#app");
 const ribbon = document.querySelector("#ribbon-values");
 const live = document.querySelector("#status-live");
@@ -45,6 +45,16 @@ function pageHead(kicker, title, description) {
 
 function badge(text, kind) { return node("span", `badge ${kind.toLowerCase()}`, text); }
 
+function stateKind(value) {
+  if (["COMPLETE", "ACTIVE", "ELIGIBLE"].includes(value)) return "complete";
+  if (["BLOCKED", "SUSPENDED", "RETIRED"].includes(value)) return "blocked";
+  return "planned";
+}
+
+function activeAgentRoute(agentId) {
+  return location.hash.replace(/^#/, "") === `agent/${agentId}`;
+}
+
 function agentButton(agent) {
   const button = node("button", "agent-button");
   button.type = "button";
@@ -88,7 +98,7 @@ function renderOverview() {
   });
   section.append(grid);
   const note = node("aside", "folio-note");
-  note.append(node("h2", "", "Complete does not mean active"), node("p", "", "Every definition is complete enough to review. Every agent remains planned and blocked until runtime evidence, audit implementation, acceptance criteria, and accountable-human approval exist."));
+  note.append(node("h2", "", "Complete does not mean active"), node("p", "", `Current snapshot: ${state.dashboard.counts.complete} complete definitions, ${state.dashboard.counts.active} active, and ${state.dashboard.counts.blocked} blocked. Activation depends on runtime evidence, audit implementation, acceptance criteria, and accountable-human approval.`));
   section.append(note);
   return section;
 }
@@ -107,10 +117,17 @@ function renderAgents() {
   section.append(pageHead("Definition ledger", "Six governed definitions. No implied authority.", "Search and inspect canonical identity, accountable ownership, lifecycle, completeness, and activation state."));
   const toolbar = node("div", "toolbar");
   const filters = node("div", "filters");
+  const filterButtons = [];
+  const results = node("div");
+  const renderAgentResults = () => {
+    results.replaceChildren(buildAgentResults());
+    filterButtons.forEach((item) => item.button.classList.toggle("active", item.value === state.filter));
+  };
   [["ALL", "All"], ["COORDINATION", "Coordination"], ["ASSURANCE", "Assurance"], ["PILLAR_LEAD", "Pillar leads"]].forEach(([value, label]) => {
     const button = node("button", state.filter === value ? "active" : "", label);
     button.type = "button";
-    button.addEventListener("click", () => { state.filter = value; renderRoute(); });
+    button.addEventListener("click", () => { state.filter = value; renderAgentResults(); });
+    filterButtons.push({ value, button });
     filters.append(button);
   });
   const search = node("input", "search");
@@ -118,15 +135,21 @@ function renderAgents() {
   search.placeholder = "Search name, ID, owner, or purpose";
   search.setAttribute("aria-label", "Search agent definitions");
   search.value = state.search;
-  search.addEventListener("input", () => { state.search = search.value; renderRoute(); });
+  search.addEventListener("input", () => { state.search = search.value; renderAgentResults(); });
   toolbar.append(filters, search);
-  section.append(toolbar);
+  section.append(toolbar, results);
+  renderAgentResults();
+  return section;
+}
+
+function buildAgentResults() {
+  const container = node("div");
   const agents = filteredAgents();
   if (!agents.length) {
     const empty = node("div", "empty-state");
     empty.append(node("h2", "", "No definitions match this view"), node("p", "", "Change the filter or search phrase. The governed source data has not been changed."));
-    section.append(empty);
-    return section;
+    container.append(empty);
+    return container;
   }
   const wrap = node("div", "ledger-wrap");
   const table = node("table", "ledger");
@@ -144,11 +167,11 @@ function renderAgents() {
     nameCell.append(open);
     row.append(nameCell, node("td", "", agent.agent_id), node("td", "", agent.owner_id), node("td", "", agent.role_category));
     const complete = node("td"); complete.append(badge(agent.completeness, "complete"));
-    const lifecycle = node("td"); lifecycle.append(badge(agent.lifecycle, "planned"));
+    const lifecycle = node("td"); lifecycle.append(badge(agent.lifecycle, stateKind(agent.lifecycle)));
     const eligibility = node("td"); eligibility.append(badge(agent.eligibility, "blocked"));
     row.append(complete, lifecycle, eligibility); body.append(row);
   });
-  table.append(head, body); wrap.append(table); section.append(wrap); return section;
+  table.append(head, body); wrap.append(table); container.append(wrap); return container;
 }
 
 function reviewSection(title, values) {
@@ -175,7 +198,17 @@ function renderDetail(detail) {
   section.append(pageHead(detail.role_category.replace("_", " "), detail.display_name, detail.purpose));
   const grid = node("div", "detail-grid");
   const main = node("div", "detail-main");
-  main.append(reviewSection("Responsibilities", detail.responsibilities), reviewSection("Non-responsibilities", detail.non_responsibilities), contractSection("Input contracts", detail.input_contracts), contractSection("Output contracts", detail.output_contracts), reviewSection("Capabilities", detail.capability_requirements));
+  main.append(
+    reviewSection("Responsibilities", detail.responsibilities),
+    reviewSection("Non-responsibilities", detail.non_responsibilities),
+    contractSection("Input contracts", detail.input_contracts),
+    contractSection("Output contracts", detail.output_contracts),
+    reviewSection("Capabilities", detail.capability_requirements),
+    reviewSection("Allowed systems", detail.allowed_systems),
+    contractSection("Approval requirements", detail.approvals.map((item) => ({ id: item.id, description: item.trigger, required_fields: [item.approver] }))),
+    reviewSection("Audit obligations", detail.audit_events),
+    contractSection("Acceptance criteria", detail.acceptance_criteria.map((item) => ({ id: item.id, description: item.description, required_fields: [item.evidence_type] })))
+  );
   const aside = node("aside", "detail-aside");
   const statePanel = node("section", "review-section");
   statePanel.append(node("h2", "", "Governance context"), definitionList([
@@ -185,12 +218,25 @@ function renderDetail(detail) {
     ["Data", detail.data_classifications.join(", ")], ["Tools", String(detail.allowed_tools.length)],
   ]));
   const blockers = reviewSection("Readiness blockers", detail.blockers);
+  const failure = node("section", "review-section");
+  failure.append(node("h2", "", "Failure policy"), definitionList([
+    ["Validation", detail.failure_behavior.on_validation_failure],
+    ["Missing authority", detail.failure_behavior.on_missing_authority],
+    ["Dependency", detail.failure_behavior.on_dependency_failure],
+    ["Preserve artifacts", detail.failure_behavior.preserve_working_artifacts ? "Yes" : "No"],
+  ]));
+  const escalation = node("section", "review-section");
+  escalation.append(node("h2", "", "Escalation policy"), definitionList([
+    ["Destination", detail.escalation.destination],
+    ["Include evidence", detail.escalation.include_evidence ? "Yes" : "No"],
+  ]));
+  appendList(escalation, detail.escalation.conditions);
   const sources = node("section", "review-section"); sources.append(node("h2", "", "Prompt provenance"));
   detail.prompt_sources.forEach((source) => sources.append(node("p", "provenance", `${source.path} · sha256 ${source.sha256}`)));
   const reveal = node("button", "prompt-button", "Reveal prompt text"); reveal.type = "button";
   reveal.addEventListener("click", (event) => revealPrompt(detail.agent_id, event.currentTarget));
   sources.append(node("p", "", "Prompt text is fetched only after this deliberate action."), reveal);
-  aside.append(statePanel, blockers, sources); grid.append(main, aside); section.append(grid); return section;
+  aside.append(statePanel, blockers, failure, escalation, sources); grid.append(main, aside); section.append(grid); return section;
 }
 
 function renderReadiness() {
@@ -212,11 +258,13 @@ function renderError(title, message, findings = []) {
 }
 
 async function revealPrompt(agentId, trigger) {
+  const requestVersion = state.navigationVersion;
   state.promptTrigger = trigger;
   trigger.disabled = true;
   trigger.textContent = "Loading prompt…";
   try {
     const prompt = await api(`/api/agents/${encodeURIComponent(agentId)}/prompt`);
+    if (requestVersion !== state.navigationVersion || !activeAgentRoute(agentId)) return;
     state.prompt = prompt;
     promptText.textContent = prompt.composed_prompt;
     promptProvenance.replaceChildren();
@@ -224,6 +272,7 @@ async function revealPrompt(agentId, trigger) {
     dialog.showModal();
     promptText.focus();
   } catch (error) {
+    if (requestVersion !== state.navigationVersion || !activeAgentRoute(agentId)) return;
     setLive(`Prompt could not be loaded: ${error.message}`);
   } finally {
     trigger.disabled = false;
@@ -241,13 +290,16 @@ function closePrompt() {
   if (trigger && trigger.isConnected) trigger.focus();
 }
 
-async function loadDetail(agentId) {
+async function loadDetail(agentId, requestVersion) {
   app.replaceChildren(renderError("Loading governed definition", "Validating this agent's current source data…"));
   try {
-    state.detail = await api(`/api/agents/${encodeURIComponent(agentId)}`);
+    const detail = await api(`/api/agents/${encodeURIComponent(agentId)}`);
+    if (requestVersion !== state.navigationVersion || !activeAgentRoute(agentId)) return;
+    state.detail = detail;
     state.detailId = agentId;
     renderRoute();
   } catch (error) {
+    if (requestVersion !== state.navigationVersion || !activeAgentRoute(agentId)) return;
     state.detail = null; state.detailId = null;
     app.replaceChildren(renderError(error.status === 404 ? "Unknown agent" : "Definition unavailable", error.message, error.findings));
   }
@@ -268,7 +320,7 @@ function renderRoute() {
   else if (route === "agent" && encodedId) {
     let agentId;
     try { agentId = decodeURIComponent(encodedId); } catch { app.replaceChildren(renderError("Unknown agent", "The agent route is malformed.")); return; }
-    if (state.detailId !== agentId) { loadDetail(agentId); return; }
+    if (state.detailId !== agentId) { loadDetail(agentId, state.navigationVersion); return; }
     app.replaceChildren(renderDetail(state.detail));
   } else app.replaceChildren(renderError("Unknown view", "Use Overview, Agents, or Readiness to continue."));
   app.focus({ preventScroll: true });
@@ -293,5 +345,5 @@ async function loadDashboard() {
 document.querySelector("#retry-button").addEventListener("click", loadDashboard);
 document.querySelector("#prompt-close").addEventListener("click", closePrompt);
 dialog.addEventListener("cancel", (event) => { event.preventDefault(); closePrompt(); });
-window.addEventListener("hashchange", () => { closePrompt(); state.detail = null; state.detailId = null; renderRoute(); });
+window.addEventListener("hashchange", () => { state.navigationVersion += 1; closePrompt(); state.detail = null; state.detailId = null; renderRoute(); });
 loadDashboard();

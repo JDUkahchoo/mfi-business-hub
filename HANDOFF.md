@@ -5,7 +5,7 @@
 - **Branch:** `feature/local-review-dashboard`
 - **Worktree:** `D:\Joshua\Claude\projects\APPS\mfi-business-hub\mfi-business-hub\.worktrees\local-review-dashboard`
 - **Latest local integration:** `1339182` — agent-definition framework integrated and verified on Windows
-- **Current owner:** Codex (local dashboard implementation complete; final branch review pending)
+- **Current owner:** Codex (local dashboard implementation and final review fixes complete)
 - **Current milestone:** Local review dashboard over the completed Cohort 1 definition framework
 
 ## Current objective
@@ -50,9 +50,9 @@ Complete and independently review the polished, read-only local browser dashboar
 - Browser views include Overview, Agents, Agent Detail, Readiness, and an explicit prompt viewer; prompt text is absent from default responses.
 - Repeated prompt paths with inconsistent fingerprints fail the request atomically with refresh guidance.
 - Desktop, agent-ledger, detail, and mobile-width screenshots were reviewed from the real local server.
-- Dashboard branch verification: 258 tests passed, 1 Windows symlink-permission test skipped with platform-neutral coverage passing.
+- Dashboard branch verification: 267 tests passed, 2 Windows symlink-permission tests skipped with platform-neutral coverage passing.
 - The verified feature is merged into local `main` at `27add58`; nothing from this feature has been pushed to GitHub.
-- The framework, dashboard services/server/CLI/assets, inspection commands, and read-only acceptance proof are covered by 258 passing unit tests (1 host-permission symlink test skipped and covered by platform-neutral resolved-containment tests).
+- The framework, dashboard services/server/CLI/assets, inspection commands, and read-only acceptance proof are covered by 267 passing unit tests (2 host-permission symlink tests skipped and covered by platform-neutral containment tests).
 - All six load as definition `COMPLETE`, lifecycle `PLANNED`, activation `BLOCKED`, with zero tools and zero authority grants; zero are activation-eligible.
 - `origin/main` remains at `de669c3`; local `main` now contains the reviewed agent-definition commits.
 - No seat is staffed, no agent is activated, and no authority grant is present.
@@ -62,7 +62,7 @@ Complete and independently review the polished, read-only local browser dashboar
 
 ## Verification evidence
 
-- `python -m pytest tests/unit -q` — 258 passed, 1 skipped for Windows symlink permission.
+- `python -m pytest tests/unit -q` — 267 passed, 2 skipped for Windows symlink permission.
 - Read-only acceptance exercises all six detail and prompt routes plus health, dashboard, HEAD, 404, traversal, and mutation rejection while preserving source bytes and modification times.
 - `python -m app.agents.definitions.cli validate` — `6 Cohort 1 definitions valid; 12 prompt sources loaded; 0 authority grants resolved.`
 - `python -m app.agents.definitions.cli summary` — six deterministic `COMPLETE  PLANNED  BLOCKED` rows.
@@ -74,7 +74,7 @@ Complete and independently review the polished, read-only local browser dashboar
 
 ## Next action
 
-Codex: run the final whole-branch review, fix any Critical or Important findings with regression tests, and present the live local checkpoint.
+Codex: present the live local checkpoint. The fresh whole-branch review found no Critical issues; all seven Important findings were reproduced and fixed in one regression-tested pass.
 
 Joshua: review the real dashboard at the printed loopback URL. Merge, GitHub publishing, and deployment remain separate later decisions.
 

@@ -81,3 +81,34 @@ def test_mobile_styles_contain_long_headings_and_navigation_labels() -> None:
     assert ".rail-links a { min-width: 0;" in styles
     assert ".governance-ribbon { width: 100%; max-width: 100vw; }" in styles
     assert ".rail-links { width: 100%; min-width: 0; }" in styles
+
+
+def test_agent_detail_renders_every_governed_review_category() -> None:
+    script = (ROOT / "app.js").read_text(encoding="utf-8")
+    for label in (
+        "Allowed systems", "Approval requirements", "Audit obligations",
+        "Failure policy", "Escalation policy", "Acceptance criteria",
+    ):
+        assert label in script
+
+
+def test_search_updates_only_results_and_preserves_the_mounted_toolbar() -> None:
+    script = (ROOT / "app.js").read_text(encoding="utf-8")
+    input_handler = re.search(r'search\.addEventListener\("input", \(\) => \{(?P<body>.*?)\}\);', script)
+    assert input_handler is not None
+    assert "renderAgentResults" in input_handler.group("body")
+    assert "renderRoute" not in input_handler.group("body")
+
+
+def test_navigation_invalidates_pending_detail_and_prompt_requests() -> None:
+    script = (ROOT / "app.js").read_text(encoding="utf-8")
+    assert "navigationVersion" in script
+    assert script.count("requestVersion !== state.navigationVersion") >= 3
+    assert "activeAgentRoute(agentId)" in script
+
+
+def test_lifecycle_copy_and_badge_style_are_derived_from_payload_state() -> None:
+    script = (ROOT / "app.js").read_text(encoding="utf-8")
+    assert "function stateKind" in script
+    assert 'badge(agent.lifecycle, stateKind(agent.lifecycle))' in script
+    assert "Every agent remains planned" not in script
