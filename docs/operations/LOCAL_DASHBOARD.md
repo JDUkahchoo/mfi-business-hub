@@ -45,3 +45,12 @@ Prompt bodies are absent from the opening page, dashboard API, and ordinary agen
 
 This milestone has no login, users, database, permissions engine, approval engine, audit store, model gateway, worker connection, agent runtime, editing, evidence submission, activation control, public hostname, analytics, or deployment configuration. Source registry, manifest, prompt, and lifecycle files remain unchanged by dashboard requests.
 
+## Deferred improvements
+
+These reviewed follow-ups do not block local use or the Projects and Ventures Workspace milestone:
+
+- **DASH-001 — Malformed URL response:** map invalid percent-encoding to the stable JSON `404` response instead of the generic local `500` boundary.
+- **DASH-002 — Complete method rejection:** return the documented JSON `405` and `Allow` header for every unsupported HTTP method, not only `POST`, `PUT`, `PATCH`, and `DELETE`.
+- **DASH-003 — Visible loading feedback:** show prompt-load failures beside the reveal control and use a neutral detail-loading state rather than an error-styled placeholder.
+- **DASH-004 — Status-label contrast:** darken small amber status text to meet the 4.5:1 normal-text contrast target while preserving amber borders and emphasis.
+

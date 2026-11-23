@@ -1,16 +1,16 @@
 # MFI Business Hub Handoff
 
-- **Updated:** 2026-11-21 America/Chicago
+- **Updated:** 2026-11-23 America/Chicago
 - **Repository:** `https://github.com/JDUkahchoo/mfi-business-hub.git`
-- **Branch:** `feature/local-review-dashboard`
-- **Worktree:** `D:\Joshua\Claude\projects\APPS\mfi-business-hub\mfi-business-hub\.worktrees\local-review-dashboard`
-- **Latest local integration:** `1339182` — agent-definition framework integrated and verified on Windows
-- **Current owner:** Codex (local dashboard implementation and final review fixes complete)
-- **Current milestone:** Local review dashboard over the completed Cohort 1 definition framework
+- **Branch:** `main`
+- **Worktree:** `D:\Joshua\Claude\projects\APPS\mfi-business-hub\mfi-business-hub`
+- **Latest verified feature integration:** `5499be3` — local dashboard review findings resolved
+- **Current owner:** Codex (Projects and Ventures Workspace discovery and design)
+- **Current milestone:** Projects and Ventures Workspace; Vague is the proposed first real venture workspace
 
 ## Current objective
 
-Complete and independently review the polished, read-only local browser dashboard before any merge, push, or deployment choice. Preserve `PLANNED`/`BLOCKED` lifecycle safety, prompt privacy by default, and the absence of tools, grants, runtime execution, or provider bindings.
+Design the Projects and Ventures Workspace so MFI can organize real work such as the Vague tabletop game through governed project records, milestones, decisions, evidence, and accountable-human ownership. Do not add runtime agents, authority grants, deployment, or persistent mutation behavior before Joshua approves the workspace design.
 
 ## Implementation commits
 
@@ -31,6 +31,8 @@ Complete and independently review the polished, read-only local browser dashboar
 - `07af4a7` — add loopback read-only HTTP server
 - `be502bb` — add local dashboard command
 - `98b5308` — add data-driven browser review interface
+- `4bc28dd` — complete local dashboard checkpoint and operating documentation
+- `5499be3` — resolve all Important local dashboard review findings
 
 ## Completed feature work
 
@@ -42,22 +44,23 @@ Complete and independently review the polished, read-only local browser dashboar
 - Added typed readiness reporting that separates definition completeness from activation eligibility and never changes lifecycle state.
 - Added read-only `validate`, `summary`, `show`, and `readiness` commands plus an operator guide.
 - Corrected roadmap, architecture, and registry status language without claiming an agent runtime exists.
+- Added the loopback-only, read-only local browser dashboard with Overview, Agents, Agent Detail, Readiness, and explicit prompt-review views.
+- Added atomic source-version checks, loopback authority validation, static-asset containment, browser race protection, complete governance detail rendering, and read-only acceptance coverage.
 
 ## Current branch state
 
-- Local dashboard design and implementation plan are documented under `docs/superpowers/`.
+- Local dashboard design and implementation plan are documented under `docs/superpowers/` and merged into local `main`.
 - The dashboard is standard-library Python plus static local browser assets, loopback-only, read-only, and dependency-free.
 - Browser views include Overview, Agents, Agent Detail, Readiness, and an explicit prompt viewer; prompt text is absent from default responses.
 - Repeated prompt paths with inconsistent fingerprints fail the request atomically with refresh guidance.
 - Desktop, agent-ledger, detail, and mobile-width screenshots were reviewed from the real local server.
 - Dashboard branch verification: 267 tests passed, 2 Windows symlink-permission tests skipped with platform-neutral coverage passing.
-- The verified feature is merged into local `main` at `27add58`; nothing from this feature has been pushed to GitHub.
+- The verified dashboard feature is merged into local `main` through `5499be3`.
 - The framework, dashboard services/server/CLI/assets, inspection commands, and read-only acceptance proof are covered by 267 passing unit tests (2 host-permission symlink tests skipped and covered by platform-neutral containment tests).
 - All six load as definition `COMPLETE`, lifecycle `PLANNED`, activation `BLOCKED`, with zero tools and zero authority grants; zero are activation-eligible.
-- `origin/main` remains at `de669c3`; local `main` now contains the reviewed agent-definition commits.
 - No seat is staffed, no agent is activated, and no authority grant is present.
 - The Control Plane, authentication, database, live agent execution, routing, approvals, and audit persistence remain future work.
-- Independent whole-branch review found no Critical issues. All eight Important findings were reproduced with failing tests and remediated in one fix pass.
+- Independent whole-branch review found no Critical issues. All seven Important findings were reproduced with failing tests and remediated in one fix pass.
 - Merged-result verification exposed and fixed one CRLF-only test assumption; the feature worktree and merged feature branch were then removed.
 
 ## Verification evidence
@@ -74,9 +77,13 @@ Complete and independently review the polished, read-only local browser dashboar
 
 ## Next action
 
-Codex: present the live local checkpoint. The fresh whole-branch review found no Critical issues; all seven Important findings were reproduced and fixed in one regression-tested pass.
+Codex: lead discovery, approach selection, and an approved design for the Projects and Ventures Workspace before implementation planning.
 
-Joshua: review the real dashboard at the printed loopback URL. Merge, GitHub publishing, and deployment remain separate later decisions.
+Joshua: identify where the current Vague material is stored and describe what a useful first Vague session in the Hub should accomplish.
+
+Claude: independently review the proposed workspace architecture and governance after Codex writes the design; remain read-only on Codex's branch.
+
+Gemma 4: after Joshua identifies and approves the source material, prepare a private structured inventory under the analyst staging boundary. Nemotron remains reserved for later bounded fixtures and test scenarios.
 
 ## Known constraints
 
@@ -84,6 +91,7 @@ Joshua: review the real dashboard at the printed loopback URL. Merge, GitHub pub
 - OpenCode's background service may retain stale agent discovery across branch switches; run `opencode reload` before validating changed OpenCode agents.
 - Gemma and Nemotron assignments remain routing preferences, not canonical MFI agent identities.
 - The JSON registry is an interim version-controlled store until a deliberate database migration milestone.
+- Deferred local-dashboard improvements `DASH-001` through `DASH-004` are recorded in `docs/operations/LOCAL_DASHBOARD.md`; none blocks the next design milestone.
 
 ## Transfer protocol
 
